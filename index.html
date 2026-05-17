@@ -1,0 +1,2138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="true" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#070816" />
+  <title>Launcher VIBE</title>
+  <style>
+    :root {
+      --bg: #070816;
+      --panel: rgba(12, 15, 30, 0.82);
+      --panel-2: rgba(16, 20, 38, 0.92);
+      --line: rgba(255, 255, 255, 0.14);
+      --text: rgba(255, 255, 255, 0.98);
+      --text-muted: rgba(255, 255, 255, 0.72);
+      --text-muted2: rgba(255, 255, 255, 0.48);
+      --shadow: 0 28px 100px rgba(0, 0, 0, 0.34);
+      --shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.18);
+      --radius: 34px;
+      --radius-lg: 28px;
+      --radius-md: 18px;
+      --blur-lg: blur(16px);
+      --blur-md: blur(10px);
+      --transition: 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --card-height: 88px;
+      --max-content: 430px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 20%, rgba(99, 102, 241, 0.32), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(34, 211, 238, 0.22), transparent 24%),
+        radial-gradient(circle at 50% 92%, rgba(236, 72, 153, 0.16), transparent 28%),
+        var(--bg);
+      background-attachment: fixed;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -webkit-touch-callout: none;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.22;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 54px 54px;
+      z-index: 0;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    img { display: block; }
+
+    .view {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .view.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .home, .library, .vibe-library, .runtime { overflow: hidden; }
+    .home {
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 18px 16px 16px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .topbar {
+      width: 100%;
+      max-width: var(--max-content);
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .profile-chip {
+      border: 1px solid rgba(255,255,255,0.15);
+      background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+      backdrop-filter: var(--blur-md);
+      border-radius: 999px;
+      padding: 8px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      min-height: 40px;
+    }
+
+    .profile-chip img, .profile-chip .profile-chip-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+
+    .profile-chip span { font-size: 12px; font-weight: 650; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .settings-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(126, 34, 206, 0.45);
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(126, 34, 206, 0.3), rgba(88, 44, 131, 0.22));
+      color: var(--text);
+      backdrop-filter: var(--blur-md);
+      font-size: 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+      box-shadow: 0 8px 24px rgba(126, 34, 206, 0.2);
+    }
+    .settings-btn:hover { transform: scale(1.06) rotate(14deg); }
+
+    .home-content {
+      width: 100%;
+      max-width: var(--max-content);
+      margin: 0 auto;
+      text-align: center;
+      animation: slideUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand-large { margin: 8px 0 28px; }
+    .brand-large small {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: var(--text-muted2);
+      margin-bottom: 10px;
+    }
+    .brand-large h1 {
+      margin: 0;
+      font-size: 42px;
+      line-height: 1.05;
+      font-weight: 950;
+      background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(200,200,255,0.78));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand-desc {
+      margin: 0 0 24px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .cta-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .library-btn {
+      position: relative;
+      width: 100%;
+      max-width: 310px;
+      aspect-ratio: 1.55;
+      border: none;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--text);
+      transition: transform var(--transition), box-shadow var(--transition);
+      overflow: hidden;
+      touch-action: manipulation;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .library-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(88,44,131,0.15), rgba(108,40,168,0.4), rgba(126,34,206,0.4), rgba(108,40,168,0.4), rgba(88,44,131,0.15));
+      background-size: 200% 100%;
+      animation: wavyGradient 3s ease-in-out infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+    @keyframes wavyGradient { 0% { background-position: 0% 0%; } 50% { background-position: 100% 0%; } 100% { background-position: 0% 0%; } }
+
+    .library-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(88,44,131,0.42), rgba(108,40,168,0.28), rgba(126,34,206,0.18));
+      border: 1px solid rgba(126,34,206,0.5);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 60px rgba(88,44,131,0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+      z-index: 1;
+      pointer-events: none;
+      backdrop-filter: var(--blur-md);
+    }
+
+    .library-btn span { position: relative; z-index: 2; }
+    .library-btn:hover { transform: translateY(-4px); box-shadow: 0 28px 80px rgba(88,44,131,0.35); }
+    .library-btn:active { transform: translateY(-1px) scale(0.98); }
+    .library-btn-icon { font-size: 48px; line-height: 1; }
+    .library-btn-text { font-size: 16px; font-weight: 760; }
+    .library-btn-sub { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+    .vibe-mini-btn {
+      position: relative;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05));
+      backdrop-filter: var(--blur-md);
+      box-shadow: var(--shadow-sm);
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: transform var(--transition), background var(--transition), border-color var(--transition);
+    }
+    .vibe-mini-btn:hover { transform: translateY(-2px); border-color: rgba(126,34,206,0.38); }
+
+    .home-shortcuts {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      text-align: left;
+    }
+    .shortcut-column {
+      padding: 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.04));
+      backdrop-filter: var(--blur-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .shortcut-title {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+      font-weight: 700;
+    }
+    .shortcut-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .quick-app-btn {
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      gap: 10px;
+      transition: transform var(--transition), border-color var(--transition), background var(--transition);
+      touch-action: manipulation;
+    }
+    .quick-app-btn.recent { background: linear-gradient(135deg, rgba(236,72,153,0.35), rgba(244,114,182,0.25)); border-color: rgba(236,72,153,0.5); }
+    .quick-app-btn.favorite { background: linear-gradient(135deg, rgba(34,211,238,0.35), rgba(56,189,248,0.25)); border-color: rgba(34,211,238,0.5); }
+    .quick-app-btn:hover { transform: translateY(-2px); }
+    .quick-app-icon {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      overflow: hidden;
+    }
+    .quick-app-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .quick-app-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .quick-app-name {
+      font-size: 13px;
+      font-weight: 650;
+      word-break: break-word;
+      line-height: 1.2;
+    }
+    .quick-app-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.2;
+    }
+    .shortcut-empty { margin: 12px 0 0; font-size: 12px; color: var(--text-muted2); text-align: center; }
+
+    .library-header, .vibe-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 16px 16px 12px;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(99,102,241,0.32), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(34,211,238,0.22), transparent 24%),
+        radial-gradient(circle at 50% 92%, rgba(236,72,153,0.17), transparent 28%),
+        var(--bg);
+      background-attachment: fixed;
+    }
+    .library-header::after, .vibe-header::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--line) 20%, var(--line) 80%, transparent);
+    }
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+    .lib-back-btn, .lib-add-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      margin: -8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .lib-add-btn { font-size: 24px; }
+    .title-row h2 {
+      margin: 0;
+      flex: 1;
+      font-size: 22px;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    .lib-search {
+      position: relative;
+      width: 100%;
+      max-width: var(--max-content);
+      margin: 0 auto;
+    }
+    .lib-search input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 14px;
+      backdrop-filter: var(--blur-md);
+    }
+    .lib-search input::placeholder { color: var(--text-muted2); }
+    .lib-search input:focus { outline: none; border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.12); }
+
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px 16px 16px;
+    }
+    .apps-grid {
+      width: 100%;
+      max-width: var(--max-content);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      align-content: start;
+      padding-bottom: 24px;
+    }
+    .app-card {
+      position: relative;
+      min-height: var(--card-height);
+      border-radius: 20px;
+      padding: 14px;
+      border: 1px solid rgba(126, 34, 206, 0.36);
+      background: linear-gradient(135deg, rgba(126, 34, 206, 0.24), rgba(108, 40, 168, 0.18), rgba(88, 44, 131, 0.12));
+      backdrop-filter: var(--blur-md);
+      box-shadow: 0 20px 50px rgba(126, 34, 206, 0.15), inset 0 1px 0 rgba(255,255,255,0.12);
+      cursor: grab;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      touch-action: manipulation;
+      overflow: hidden;
+      user-select: none;
+    }
+    .app-card:hover { transform: translateY(-2px); border-color: rgba(168,85,247,0.6); box-shadow: 0 28px 70px rgba(168,85,247,0.22), inset 0 1px 0 rgba(255,255,255,0.18); }
+    .app-card.dragging { opacity: 0.5; transform: scale(0.96); border-color: rgba(168,85,247,0.8); }
+    .app-card.drag-over { border-style: dashed; border-color: rgba(168,85,247,0.9); }
+    .app-card-menu {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity var(--transition);
+      z-index: 5;
+    }
+    .app-card:hover .app-card-menu { opacity: 1; }
+    .app-card-btn {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      width: 28px;
+      height: 28px;
+      padding: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .app-card-btn svg { width: 14px; height: 14px; }
+    .app-card-btn:hover { background: rgba(255,255,255,0.18); color: var(--text); }
+    .app-card-btn.delete:hover { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.5); color: rgba(239,68,68,1); }
+    .app-card-btn.favorite.active { background: rgba(251,146,60,0.3); border-color: rgba(251,146,60,0.5); color: rgba(251,146,60,1); }
+    .app-card-icon {
+      width: 60px;
+      height: 60px;
+      min-width: 60px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .app-card-icon img { width: 100%; height: 100%; object-fit: cover; }
+    .app-card-content { min-width: 0; display: flex; flex-direction: column; gap: 3px; flex: 1; }
+    .app-card-name { font-size: 15px; font-weight: 700; word-break: break-word; line-height: 1.25; }
+    .app-card-desc { font-size: 13px; color: var(--text-muted); word-break: break-word; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .app-card-date { font-size: 12px; color: var(--text-muted2); line-height: 1.2; }
+    .empty-state { padding: 44px 20px; text-align: center; }
+    .empty-badge { font-size: 48px; margin-bottom: 16px; display: block; }
+    .empty-state h4 { margin: 0 0 8px; font-size: 18px; font-weight: 700; color: var(--text); }
+    .empty-state p { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+    .runtime-header {
+      position: relative;
+      padding: 12px 16px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    .runtime-title { margin: 0; flex: 1; font-size: 16px; font-weight: 700; text-align: center; }
+    .runtime-close {
+      background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 8px; margin: -8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .runtime-content { flex: 1; overflow: hidden; background: #0b0d19; }
+    .runtime-iframe { border: none; width: 100%; height: 100%; background: white; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: flex-end;
+      background: rgba(0, 0, 0, 0);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      padding: 16px;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: auto; background: rgba(0,0,0,0.48); }
+    .modal-panel {
+      position: relative;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(99,102,241,0.32), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(34,211,238,0.22), transparent 24%),
+        var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: var(--blur-lg);
+      width: 100%;
+      max-width: 520px;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      animation: slideUp 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .modal-header { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .modal-header h3 { margin: 0; font-size: 20px; font-weight: 820; flex: 1; }
+    .modal-close { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; padding: 8px; margin: -8px; display: flex; align-items: center; justify-content: center; }
+    .modal-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .modal-footer { padding: 16px 20px 20px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
+    .btn {
+      padding: 11px 18px; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 650; cursor: pointer;
+      transition: all var(--transition); touch-action: manipulation; white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(168,85,247,0.82), rgba(139,92,246,0.72));
+      color: var(--text); border: 1px solid rgba(168,85,247,0.6);
+      box-shadow: 0 12px 32px rgba(168,85,247,0.2); flex: 1;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(168,85,247,0.3); }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text); border: 1px solid rgba(255,255,255,0.16); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.24); }
+    .btn-danger { border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.12); color: rgba(255,150,150,1); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.6); }
+    .btn-inline { background: none; border: none; color: var(--text-muted); text-decoration: underline; padding: 0; font-size: 12px; cursor: pointer; }
+    .btn-inline:hover { color: var(--text); }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 13px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.02em; }
+    .form-input {
+      padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-md); background: rgba(255,255,255,0.08);
+      color: var(--text); font-size: 14px; transition: border-color var(--transition), background var(--transition);
+    }
+    .form-input::placeholder { color: var(--text-muted2); }
+    .form-input:focus { outline: none; border-color: rgba(168,85,247,0.6); background: rgba(255,255,255,0.12); }
+    textarea.form-input { resize: vertical; min-height: 84px; font-family: inherit; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .settings-section, .account-card, .sync-card, .auth-card {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: var(--blur-md);
+    }
+    .settings-section h4, .account-card h4, .sync-card h4, .auth-card h4 {
+      margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .settings-section p, .account-card p, .sync-card p { margin: 8px 0; font-size: 13px; color: var(--text-muted); }
+    .settings-section strong, .account-card strong, .sync-card strong { color: var(--text); }
+
+    .auth-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 650;
+    }
+    .tab-btn.active { background: rgba(168,85,247,0.22); border-color: rgba(168,85,247,0.42); color: var(--text); }
+    .auth-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .google-btn {
+      flex: 1;
+      min-width: 180px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.06));
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+      transition: transform var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    .google-btn:hover {
+      background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.08));
+      border-color: rgba(255,255,255,0.24);
+      transform: translateY(-1px);
+    }
+    .google-btn:active { transform: scale(0.98); }
+    .btn-primary.signup-mode {
+      background: linear-gradient(135deg, rgba(99,102,241,0.86), rgba(168,85,247,0.82));
+      box-shadow: 0 14px 34px rgba(99,102,241,0.22), 0 0 0 1px rgba(255,255,255,0.06) inset;
+    }
+    .muted-note { font-size: 12px; color: var(--text-muted2); line-height: 1.5; }
+
+    .icon-preview { display: none; flex-direction: column; gap: 8px; align-items: flex-start; margin-top: 8px; }
+    .icon-preview.show { display: flex; }
+    .icon-preview-img {
+      width: 80px; height: 80px; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--line);
+    }
+    .icon-preview-img img { width: 100%; height: 100%; object-fit: cover; }
+    .icon-preview-text { font-size: 12px; color: var(--text-muted); }
+    .file-input-wrapper { position: relative; display: block; border-radius: var(--radius-md); }
+    .file-input-label {
+      display: block; padding: 16px 14px; border: 2px dashed rgba(126,34,206,0.4); border-radius: var(--radius-md);
+      background: rgba(126,34,206,0.08); color: var(--text-muted); text-align: center; font-size: 13px; cursor: pointer; transition: all var(--transition); user-select: none;
+    }
+    .file-input-label:hover { border-color: rgba(126,34,206,0.6); background: rgba(126,34,206,0.14); color: var(--text); }
+
+    .profile-upload-tip {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted2);
+      line-height: 1.45;
+    }
+    .file-input-wrapper input[type="file"] { display: none; }
+    .error-msg {
+      padding: 10px 12px; border-radius: 12px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3);
+      color: rgba(255,200,200,1); font-size: 13px; line-height: 1.4; display: none;
+    }
+    .error-msg.show { display: block; }
+
+    .mini-grid { display: grid; gap: 10px; }
+    .built-card {
+      position: relative;
+      padding: 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(126,34,206,0.34);
+      background: linear-gradient(135deg, rgba(126,34,206,0.20), rgba(108,40,168,0.12), rgba(88,44,131,0.10));
+      backdrop-filter: var(--blur-md);
+      box-shadow: 0 16px 36px rgba(126,34,206,0.12);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      cursor: pointer;
+    }
+    .built-icon { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.10); display: flex; align-items: center; justify-content: center; font-size: 24px; flex: 0 0 auto; }
+    .built-content { min-width: 0; flex: 1; }
+    .built-content strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    .built-content span { display: block; font-size: 12px; color: var(--text-muted); line-height: 1.35; }
+
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.08); color: var(--text);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; }
+
+    @media (max-height: 600px) {
+      .modal-panel { max-height: 100vh; border-radius: 28px 28px 0 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="view home active" id="homeView">
+    <div class="topbar">
+      <button class="settings-btn" id="settingsBtn" title="설정">⚙️</button>
+      <button class="profile-chip" id="profileChip" title="계정">
+        <span class="profile-chip-avatar" id="profileChipAvatar">👤</span>
+        <span id="profileChipName">로그인</span>
+      </button>
+    </div>
+
+    <div class="home-content">
+      <div class="brand-large">
+        <small>APP LAUNCHER</small>
+        <h1>Launcher VIBE</h1>
+      </div>
+      <p class="brand-desc">나만의 앱을 만들고, 정리하고, 계정으로 동기화하는 공간</p>
+
+      <div class="cta-stack">
+        <button class="library-btn" id="toLibraryBtn">
+          <span class="library-btn-icon">📚</span>
+          <span class="library-btn-text">라이브러리 열기</span>
+          <span class="library-btn-sub">내 앱 관리하기</span>
+        </button>
+        <button class="vibe-mini-btn" id="toVibeLibraryBtn" type="button">ℹ️ VIBE APPS</button>
+      </div>
+
+      <div class="home-shortcuts">
+        <div class="shortcut-column">
+          <p class="shortcut-title">최근 실행</p>
+          <div class="shortcut-list" id="recentAppsList"></div>
+        </div>
+        <div class="shortcut-column">
+          <p class="shortcut-title">즐겨찾기</p>
+          <div class="shortcut-list" id="favoriteAppsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view library" id="libraryView">
+    <header class="library-header">
+      <div class="title-row">
+        <button class="lib-back-btn" id="libraryBackBtn" title="돌아가기">←</button>
+        <h2>LAUNCHER VIBE</h2>
+        <button class="lib-add-btn" id="libraryAddBtn" title="앱 추가">＋</button>
+      </div>
+      <div class="lib-search">
+        <input type="text" id="librarySearchInput" placeholder="앱 검색..." />
+      </div>
+    </header>
+    <div class="content-scroll">
+      <div class="apps-grid" id="appsGrid"></div>
+    </div>
+  </div>
+
+  <div class="view vibe-library" id="vibeLibraryView">
+    <header class="vibe-header">
+      <div class="title-row">
+        <button class="lib-back-btn" id="vibeBackBtn" title="돌아가기">←</button>
+        <h2>VIBE APPS</h2>
+        <button class="lib-add-btn" id="vibeRefreshBtn" title="새로고침">↻</button>
+      </div>
+      <div class="lib-search">
+        <input type="text" id="vibeSearchInput" placeholder="설정 앱 검색..." />
+      </div>
+    </header>
+    <div class="content-scroll">
+      <div class="apps-grid" id="vibeAppsGrid"></div>
+    </div>
+  </div>
+
+  <div class="view runtime" id="runtimeView">
+    <header class="runtime-header">
+      <h2 class="runtime-title" id="runtimeTitle">앱</h2>
+      <button class="runtime-close" id="runtimeCloseBtn" title="닫기">✕</button>
+    </header>
+    <div class="runtime-content">
+      <iframe class="runtime-iframe" id="runtimeFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"></iframe>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3>⚙️ 설정</h3>
+        <button class="modal-close" id="closeSettings" type="button">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="settings-section">
+          <h4>정보</h4>
+          <p>앱 개수: <strong id="appTotal">0</strong>개</p>
+          <p>런타임 저장소: <strong id="runtimeCount">0</strong>개</p>
+          <p>버전: <strong>1.0</strong></p>
+        </div>
+        <div class="settings-section">
+          <h4>계정</h4>
+          <p>상태: <strong id="authStateLabel">로그아웃</strong></p>
+          <button class="modal-btn" id="openAuthFromSettings">🔑 로그인 / 회원가입</button>
+          <button class="modal-btn" id="openProfileFromSettings">👤 프로필 편집</button>
+        </div>
+        <div class="settings-section">
+          <h4>데이터</h4>
+          <button class="modal-btn" id="exportData">📥 내보내기</button>
+          <button class="modal-btn" id="importData">📤 가져오기</button>
+          <input type="file" id="importFile" accept=".json" style="display:none;">
+          <button class="modal-btn btn-danger" id="clearData">🗑️ 초기화</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="authModal">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3>계정</h3>
+        <button class="modal-close" id="closeAuth" type="button">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="auth-tabs">
+          <button class="tab-btn active" id="loginTabBtn" type="button">로그인</button>
+          <button class="tab-btn" id="signupTabBtn" type="button">회원가입</button>
+        </div>
+        <div class="auth-card">
+          <div class="form-group">
+            <label class="form-label">이메일</label>
+            <input class="form-input" id="authEmail" type="email" placeholder="name@example.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">비밀번호</label>
+            <input class="form-input" id="authPassword" type="password" placeholder="비밀번호" autocomplete="current-password" />
+          </div>
+          <div class="auth-actions" style="margin-top:12px;">
+            <button class="btn btn-primary" id="authSubmitBtn" type="button">로그인</button>
+            <button class="google-btn" id="googleLoginBtn" type="button">Google로 계속</button>
+          </div>
+          <p class="muted-note" id="authHelpText" style="margin-top:12px;">이 계정은 앱 목록, 즐겨찾기, 런타임 저장 데이터를 사용자별로 동기화합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="profileModal">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3>프로필</h3>
+        <button class="modal-close" id="closeProfile" type="button">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="account-card">
+          <h4>현재 계정</h4>
+          <p>이메일: <strong id="profileEmailText">-</strong></p>
+          <p>UID: <strong id="profileUidText">-</strong></p>
+          <p>동기화: <strong id="syncStateText">로컬</strong></p>
+        </div>
+        <div class="auth-card">
+          <div class="form-group">
+            <label class="form-label">표시 이름</label>
+            <input class="form-input" id="displayNameInput" type="text" placeholder="사용자 이름" maxlength="40" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">프로필 이미지 업로드</label>
+            <div class="file-input-wrapper">
+              <label class="file-input-label">
+                이미지 선택
+                <input type="file" id="photoFileInput" accept="image/*" />
+              </label>
+            </div>
+            <div class="icon-preview" id="photoPreview">
+              <div class="icon-preview-img" id="photoPreviewImg"></div>
+              <div class="icon-preview-text" id="photoPreviewName"></div>
+              <button class="btn-inline" id="photoRemoveBtn" type="button">제거</button>
+            </div>
+            <div class="profile-upload-tip">사진은 Firebase Storage에 업로드됩니다.</div>
+          </div>
+          <div class="auth-actions" style="margin-top:12px;">
+            <button class="btn btn-primary" id="saveProfileBtn" type="button">프로필 저장</button>
+            <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3 id="modalTitle">새 앱 추가</h3>
+        <button class="modal-close" id="closeModalBtn" type="button" title="닫기">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="error-msg" id="errorMsg"></div>
+
+        <div class="form-group">
+          <label class="form-label">앱 이름</label>
+          <input type="text" id="nameInput" class="form-input" placeholder="예: 내 할일" maxlength="50" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">설명</label>
+          <textarea id="descInput" class="form-input" placeholder="앱에 대한 간단한 설명..." maxlength="200"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">출시 날짜</label>
+          <input type="date" id="dateInput" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">아이콘 이미지</label>
+          <div class="file-input-wrapper">
+            <label class="file-input-label">
+              파일 선택 또는 드래그
+              <input type="file" id="iconInput" accept="image/*" />
+            </label>
+          </div>
+          <div class="icon-preview" id="iconPreview">
+            <div class="icon-preview-img" id="iconPreviewImg"></div>
+            <div class="icon-preview-text" id="iconPreviewName"></div>
+            <button class="btn-inline" id="iconRemoveBtn" type="button">제거</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">HTML 앱 파일</label>
+          <div class="file-input-wrapper">
+            <label class="file-input-label">
+              HTML 파일 선택
+              <input type="file" id="htmlInput" accept=".html,.htm" />
+            </label>
+          </div>
+          <div class="icon-preview" id="htmlPreview">
+            <div class="icon-preview-text" id="htmlPreviewName"></div>
+            <button class="btn-inline" id="htmlRemoveBtn" type="button">제거</button>
+          </div>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button class="btn btn-secondary" id="cancelBtn" type="button">취소</button>
+        <button class="btn btn-primary" id="saveBtn" type="button">저장</button>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      getRedirectResult,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithRedirect,
+      setPersistence,
+      browserLocalPersistence,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      getDocs,
+      collection,
+      deleteDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+    import {
+      getStorage,
+      ref as storageRef,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCAh_YgvwxgUyCC_auTZXs6KycA8QM6Knc",
+      authDomain: "launcher-vibe.firebaseapp.com",
+      projectId: "launcher-vibe",
+      storageBucket: "launcher-vibe.firebasestorage.app",
+      messagingSenderId: "429799261697",
+      appId: "1:429799261697:web:ac414361432484cf896200",
+      measurementId: "G-W2S8C90Q1B"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    try { getAnalytics(firebaseApp); } catch (_) {}
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+    const storage = getStorage(firebaseApp);
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+    const STORAGE_KEY = 'launcherVibeLocalState.v2';
+
+    const isInvalidLocalOrigin = () => {
+      const proto = String(window.location.protocol || '');
+      const origin = String(window.location.origin || '');
+      return proto === 'file:' || proto === 'content:' || origin === 'null';
+    };
+
+    const authUseHint = () => {
+      return isInvalidLocalOrigin()
+        ? 'Google 로그인은 배포된 https 주소에서만 안정적으로 동작합니다.'
+        : '';
+    };
+    const CURRENT_VERSION = '1.0';
+    const DEFAULT_BUILTINS = [
+      { id: 'vibe-account', icon: '👤', title: '계정 / 프로필', desc: '로그인, 프로필 수정, 로그아웃' , action: 'profile' },
+      { id: 'vibe-sync', icon: '☁️', title: '클라우드 동기화', desc: 'Firebase로 앱과 저장 데이터 동기화', action: 'sync' },
+      { id: 'vibe-backup', icon: '📦', title: '백업 / 복원', desc: 'JSON 내보내기, 가져오기', action: 'backup' },
+      { id: 'vibe-inspector', icon: '🔎', title: '앱 저장소 확인', desc: '앱별 런타임 저장소 상태 보기', action: 'storage' },
+      { id: 'vibe-about', icon: 'ℹ️', title: '런처 정보', desc: '버전과 현재 상태 확인', action: 'about' },
+    ];
+
+    const state = {
+      currentView: 'home',
+      apps: [],
+      runtimeStores: {},
+      searchQuery: '',
+      vibeSearchQuery: '',
+      editingId: null,
+      runtimeAppId: null,
+      currentUser: null,
+      profile: { displayName: '', photoURL: '' },
+      profilePhotoFile: null,
+      profilePhotoPreview: '',
+      formData: { name: '', description: '', date: '', iconImage: '', htmlContent: '' },
+      activeAuthTab: 'login',
+      cloudReady: false,
+      cloudSyncPending: false,
+    };
+
+    const els = {
+      homeView: document.getElementById('homeView'),
+      libraryView: document.getElementById('libraryView'),
+      vibeLibraryView: document.getElementById('vibeLibraryView'),
+      runtimeView: document.getElementById('runtimeView'),
+      recentAppsList: document.getElementById('recentAppsList'),
+      favoriteAppsList: document.getElementById('favoriteAppsList'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      profileChip: document.getElementById('profileChip'),
+      profileChipAvatar: document.getElementById('profileChipAvatar'),
+      profileChipName: document.getElementById('profileChipName'),
+      toLibraryBtn: document.getElementById('toLibraryBtn'),
+      toVibeLibraryBtn: document.getElementById('toVibeLibraryBtn'),
+      libraryBackBtn: document.getElementById('libraryBackBtn'),
+      vibeBackBtn: document.getElementById('vibeBackBtn'),
+      vibeRefreshBtn: document.getElementById('vibeRefreshBtn'),
+      libraryAddBtn: document.getElementById('libraryAddBtn'),
+      librarySearchInput: document.getElementById('librarySearchInput'),
+      vibeSearchInput: document.getElementById('vibeSearchInput'),
+      appsGrid: document.getElementById('appsGrid'),
+      vibeAppsGrid: document.getElementById('vibeAppsGrid'),
+      runtimeTitle: document.getElementById('runtimeTitle'),
+      runtimeCloseBtn: document.getElementById('runtimeCloseBtn'),
+      runtimeFrame: document.getElementById('runtimeFrame'),
+      settingsModal: document.getElementById('settingsModal'),
+      closeSettings: document.getElementById('closeSettings'),
+      appTotal: document.getElementById('appTotal'),
+      runtimeCount: document.getElementById('runtimeCount'),
+      authStateLabel: document.getElementById('authStateLabel'),
+      openAuthFromSettings: document.getElementById('openAuthFromSettings'),
+      openProfileFromSettings: document.getElementById('openProfileFromSettings'),
+      exportData: document.getElementById('exportData'),
+      importData: document.getElementById('importData'),
+      importFile: document.getElementById('importFile'),
+      clearData: document.getElementById('clearData'),
+      authModal: document.getElementById('authModal'),
+      closeAuth: document.getElementById('closeAuth'),
+      loginTabBtn: document.getElementById('loginTabBtn'),
+      signupTabBtn: document.getElementById('signupTabBtn'),
+      authEmail: document.getElementById('authEmail'),
+      authPassword: document.getElementById('authPassword'),
+      authSubmitBtn: document.getElementById('authSubmitBtn'),
+      googleLoginBtn: document.getElementById('googleLoginBtn'),
+      authHelpText: document.getElementById('authHelpText'),
+      profileModal: document.getElementById('profileModal'),
+      closeProfile: document.getElementById('closeProfile'),
+      profileEmailText: document.getElementById('profileEmailText'),
+      profileUidText: document.getElementById('profileUidText'),
+      syncStateText: document.getElementById('syncStateText'),
+      displayNameInput: document.getElementById('displayNameInput'),
+      photoFileInput: document.getElementById('photoFileInput'),
+      photoPreview: document.getElementById('photoPreview'),
+      photoPreviewImg: document.getElementById('photoPreviewImg'),
+      photoPreviewName: document.getElementById('photoPreviewName'),
+      photoRemoveBtn: document.getElementById('photoRemoveBtn'),
+      saveProfileBtn: document.getElementById('saveProfileBtn'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      modalBackdrop: document.getElementById('modalBackdrop'),
+      modalTitle: document.getElementById('modalTitle'),
+      closeModalBtn: document.getElementById('closeModalBtn'),
+      nameInput: document.getElementById('nameInput'),
+      descInput: document.getElementById('descInput'),
+      dateInput: document.getElementById('dateInput'),
+      iconInput: document.getElementById('iconInput'),
+      iconPreview: document.getElementById('iconPreview'),
+      iconPreviewImg: document.getElementById('iconPreviewImg'),
+      iconPreviewName: document.getElementById('iconPreviewName'),
+      iconRemoveBtn: document.getElementById('iconRemoveBtn'),
+      htmlInput: document.getElementById('htmlInput'),
+      htmlPreview: document.getElementById('htmlPreview'),
+      htmlPreviewName: document.getElementById('htmlPreviewName'),
+      htmlRemoveBtn: document.getElementById('htmlRemoveBtn'),
+      errorMsg: document.getElementById('errorMsg'),
+      cancelBtn: document.getElementById('cancelBtn'),
+      saveBtn: document.getElementById('saveBtn'),
+    };
+
+    const escapeHtml = (str) => {
+      const div = document.createElement('div');
+      div.textContent = String(str ?? '');
+      return div.innerHTML;
+    };
+
+    const uid = () => 'app-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+    const deepClone = (obj) => JSON.parse(JSON.stringify(obj ?? {}));
+    const safeJson = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
+
+    const loadLocalState = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' ? parsed : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const persistLocalState = () => {
+      const payload = {
+        version: CURRENT_VERSION,
+        apps: state.apps,
+        runtimeStores: state.runtimeStores,
+        profile: state.profile,
+      };
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch (_) {}
+    };
+
+    const sanitizeApps = (apps) => {
+      if (!Array.isArray(apps)) return [];
+      return apps.map(app => ({
+        id: app.id || uid(),
+        name: app.name || '무제 앱',
+        description: app.description || '',
+        date: app.date || '',
+        iconImage: app.iconImage || '',
+        htmlContent: app.htmlContent || '',
+        favorite: Boolean(app.favorite),
+        lastOpened: Number(app.lastOpened || 0),
+        timestamp: Number(app.timestamp || Date.now()),
+      }));
+    };
+
+    const sanitizeRuntimeStores = (stores) => {
+      const out = {};
+      if (!stores || typeof stores !== 'object') return out;
+      for (const [appId, store] of Object.entries(stores)) {
+        out[appId] = {
+          localStorage: store?.localStorage && typeof store.localStorage === 'object' ? deepClone(store.localStorage) : {},
+          sessionStorage: store?.sessionStorage && typeof store.sessionStorage === 'object' ? deepClone(store.sessionStorage) : {},
+        };
+      }
+      return out;
+    };
+
+    const setError = (msg) => {
+      if (msg) {
+        els.errorMsg.textContent = msg;
+        els.errorMsg.classList.add('show');
+      } else {
+        els.errorMsg.classList.remove('show');
+      }
+    };
+
+    const showView = (viewName) => {
+      state.currentView = viewName;
+      [els.homeView, els.libraryView, els.vibeLibraryView, els.runtimeView].forEach(v => v.classList.remove('active'));
+      if (viewName === 'home') els.homeView.classList.add('active');
+      if (viewName === 'library') { els.libraryView.classList.add('active'); renderLibrary(); }
+      if (viewName === 'vibe') { els.vibeLibraryView.classList.add('active'); renderVibeLibrary(); }
+      if (viewName === 'runtime') els.runtimeView.classList.add('active');
+    };
+
+    const formatDate = (dateStr) => {
+      if (!dateStr) return '출시일 미정';
+      try {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch {
+        return dateStr;
+      }
+    };
+
+    const normalizeHtmlText = (text) => String(text ?? '');
+
+    const readFileAsText = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(new Error('File read error'));
+      reader.readAsText(file);
+    });
+
+    const readFileAsDataURL = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(new Error('File read error'));
+      reader.readAsDataURL(file);
+    });
+
+    const ensureRuntimeStore = (appId) => {
+      if (!state.runtimeStores[appId]) state.runtimeStores[appId] = { localStorage: {}, sessionStorage: {} };
+      if (!state.runtimeStores[appId].localStorage) state.runtimeStores[appId].localStorage = {};
+      if (!state.runtimeStores[appId].sessionStorage) state.runtimeStores[appId].sessionStorage = {};
+      return state.runtimeStores[appId];
+    };
+
+    const updateRuntimeStore = (appId, kind, data) => {
+      if (!appId || !kind || !data) return;
+      const store = ensureRuntimeStore(appId);
+      store[kind] = deepClone(data);
+      persistLocalState();
+      if (state.currentUser) queueCloudSave();
+      updateRuntimeCount();
+    };
+
+    const buildRuntimeBootstrap = (appId) => {
+      const store = ensureRuntimeStore(appId);
+      return `
+<script>
+(() => {
+  const APP_ID = ${JSON.stringify(appId)};
+  const INITIAL = ${safeJson(store)};
+  const parentPost = (kind, data) => {
+    try {
+      parent.postMessage({ __launcher: true, type: 'runtime-storage', appId: APP_ID, kind, data }, '*');
+    } catch (_) {}
+  };
+  const createStorage = (kind) => {
+    const source = INITIAL[kind] && typeof INITIAL[kind] === 'object' ? INITIAL[kind] : {};
+    const data = new Map(Object.entries(source).map(([k, v]) => [String(k), String(v)]));
+    const dump = () => Object.fromEntries(data.entries());
+    const api = {
+      get length() { return data.size; },
+      key(index) { return Array.from(data.keys())[index] ?? null; },
+      getItem(key) { key = String(key); return data.has(key) ? data.get(key) : null; },
+      setItem(key, value) { data.set(String(key), String(value)); parentPost(kind, dump()); },
+      removeItem(key) { data.delete(String(key)); parentPost(kind, dump()); },
+      clear() { data.clear(); parentPost(kind, dump()); },
+      __dump: dump
+    };
+    return new Proxy(api, {
+      get(target, prop) {
+        if (prop in target) return target[prop];
+        if (typeof prop === 'string') return target.getItem(prop);
+        return target[prop];
+      },
+      set(target, prop, value) {
+        if (typeof prop === 'string' && !(prop in target)) { target.setItem(prop, value); return true; }
+        target[prop] = value; return true;
+      },
+      deleteProperty(target, prop) { if (typeof prop === 'string') target.removeItem(prop); return true; },
+      ownKeys() { return Array.from(data.keys()); },
+      getOwnPropertyDescriptor(target, prop) {
+        if (typeof prop === 'string' && data.has(prop)) {
+          return { enumerable: true, configurable: true, value: data.get(prop), writable: true };
+        }
+        return Object.getOwnPropertyDescriptor(target, prop) || { enumerable: false, configurable: true };
+      }
+    });
+  };
+  const ls = createStorage('localStorage');
+  const ss = createStorage('sessionStorage');
+  try { Object.defineProperty(window, 'localStorage', { value: ls, configurable: true }); } catch (_) { window.localStorage = ls; }
+  try { Object.defineProperty(window, 'sessionStorage', { value: ss, configurable: true }); } catch (_) { window.sessionStorage = ss; }
+  window.addEventListener('beforeunload', () => {
+    parentPost('localStorage', ls.__dump());
+    parentPost('sessionStorage', ss.__dump());
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      parentPost('localStorage', ls.__dump());
+      parentPost('sessionStorage', ss.__dump());
+    }
+  });
+  parentPost('ready', { ok: true });
+})();
+<\/script>`;
+    };
+
+    const buildRuntimeHtml = (app) => {
+      const raw = String(app.htmlContent || '');
+      const bootstrap = buildRuntimeBootstrap(app.id);
+      const injectedBootstrap = bootstrap.replace(/<\/script>/gi, '<\\/script>');
+      if (/<\/head>/i.test(raw)) {
+        return raw.replace(/<\/head>/i, `${injectedBootstrap}</head>`);
+      }
+      if (/<head[^>]*>/i.test(raw)) {
+        return raw.replace(/<head[^>]*>/i, (m) => `${m}${injectedBootstrap}`);
+      }
+      return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${injectedBootstrap}</head><body>${raw}</body></html>`;
+    };
+
+    const persistApp = async (appId) => {
+      if (!state.currentUser) return;
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      try {
+        await setDoc(doc(db, 'users', state.currentUser.uid, 'apps', app.id), {
+          ...app,
+          runtimeStore: ensureRuntimeStore(app.id),
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+      } catch (_) {}
+    };
+
+    let cloudSaveTimer = null;
+    const queueCloudSave = () => {
+      if (!state.currentUser) return;
+      state.cloudSyncPending = true;
+      clearTimeout(cloudSaveTimer);
+      cloudSaveTimer = setTimeout(async () => {
+        await saveCloudAll();
+        state.cloudSyncPending = false;
+        updateSyncLabels();
+      }, 650);
+      updateSyncLabels();
+    };
+
+    const saveCloudAll = async () => {
+      if (!state.currentUser) return;
+      try {
+        await setDoc(doc(db, 'users', state.currentUser.uid), {
+          email: state.currentUser.email || '',
+          displayName: state.profile.displayName || state.currentUser.displayName || '',
+          photoURL: state.profile.photoURL || state.currentUser.photoURL || '',
+          updatedAt: serverTimestamp(),
+          providerId: state.currentUser.providerData?.[0]?.providerId || 'password',
+        }, { merge: true });
+
+        const existingSnap = await getDocs(collection(db, 'users', state.currentUser.uid, 'apps'));
+        const existingIds = new Set(existingSnap.docs.map(d => d.id));
+        const currentIds = new Set(state.apps.map(app => app.id));
+
+        for (const app of state.apps) {
+          await setDoc(doc(db, 'users', state.currentUser.uid, 'apps', app.id), {
+            ...app,
+            runtimeStore: ensureRuntimeStore(app.id),
+            updatedAt: serverTimestamp(),
+          }, { merge: true });
+        }
+
+        for (const id of existingIds) {
+          if (!currentIds.has(id)) {
+            await deleteDoc(doc(db, 'users', state.currentUser.uid, 'apps', id));
+          }
+        }
+      } catch (_) {}
+    };
+
+    const loadCloudAll = async () => {
+      if (!state.currentUser) return;
+      try {
+        const userRef = doc(db, 'users', state.currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          const data = userSnap.data();
+          state.profile.displayName = data.displayName || state.currentUser.displayName || '';
+          state.profile.photoURL = data.photoURL || state.currentUser.photoURL || '';
+        } else {
+          state.profile.displayName = state.currentUser.displayName || '';
+          state.profile.photoURL = state.currentUser.photoURL || '';
+        }
+
+        const appsSnap = await getDocs(collection(db, 'users', state.currentUser.uid, 'apps'));
+        const loadedApps = [];
+        const loadedStores = {};
+        appsSnap.forEach((d) => {
+          const data = d.data() || {};
+          loadedApps.push({
+            id: data.id || d.id,
+            name: data.name || '무제 앱',
+            description: data.description || '',
+            date: data.date || '',
+            iconImage: data.iconImage || '',
+            htmlContent: data.htmlContent || '',
+            favorite: Boolean(data.favorite),
+            lastOpened: Number(data.lastOpened || 0),
+            timestamp: Number(data.timestamp || Date.now()),
+          });
+          loadedStores[d.id] = sanitizeRuntimeStores({ temp: data.runtimeStore || {} }).temp || { localStorage: {}, sessionStorage: {} };
+        });
+        if (loadedApps.length) state.apps = sanitizeApps(loadedApps);
+        state.runtimeStores = { ...state.runtimeStores, ...sanitizeRuntimeStores(loadedStores) };
+        persistLocalState();
+      } catch (err) {
+        console.error('Cloud load failed', err);
+      }
+    };
+
+    const updateProfileUI = () => {
+      const user = state.currentUser;
+      const hasUser = Boolean(user);
+      els.authStateLabel.textContent = hasUser ? '로그인됨' : '로그아웃';
+      els.profileChipName.textContent = hasUser ? (state.profile.displayName || user.displayName || user.email || '계정') : '로그인';
+      els.profileChipAvatar.textContent = hasUser ? (state.profile.photoURL || user.photoURL ? '' : '👤') : '👤';
+      if (hasUser && (state.profile.photoURL || user.photoURL)) {
+        const url = state.profile.photoURL || user.photoURL;
+        els.profileChipAvatar.innerHTML = `<img src="${url}" alt="" />`;
+      } else {
+        els.profileChipAvatar.textContent = '👤';
+      }
+      els.profileEmailText.textContent = hasUser ? (user.email || '-') : '-';
+      els.profileUidText.textContent = hasUser ? user.uid : '-';
+      els.displayNameInput.value = state.profile.displayName || user?.displayName || '';
+      const previewUrl = state.profilePhotoPreview || state.profile.photoURL || user?.photoURL || '';
+      if (previewUrl) {
+        els.photoPreviewImg.innerHTML = `<img src="${previewUrl}" alt="" />`;
+        els.photoPreviewName.textContent = state.profilePhotoFile?.name || '현재 이미지';
+        els.photoPreview.classList.add('show');
+      } else {
+        els.photoPreviewImg.innerHTML = '';
+        els.photoPreviewName.textContent = '';
+        els.photoPreview.classList.remove('show');
+      }
+      els.syncStateText.textContent = hasUser ? (state.cloudSyncPending ? '동기화 중' : '클라우드') : '로컬';
+    };
+
+    const updateRuntimeCount = () => {
+      els.runtimeCount.textContent = Object.keys(state.runtimeStores || {}).length;
+      els.appTotal.textContent = state.apps.length;
+    };
+
+    const renderHomeShortcuts = () => {
+      const recentApps = [...state.apps]
+        .filter(app => Number(app.lastOpened || 0) > 0)
+        .sort((a, b) => Number(b.lastOpened || 0) - Number(a.lastOpened || 0))
+        .slice(0, 3);
+      const favoriteApps = [...state.apps]
+        .filter(app => Boolean(app.favorite))
+        .sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0))
+        .slice(0, 3);
+
+      const renderList = (apps, emptyText, className) => {
+        if (!apps.length) return `<p class="shortcut-empty">${escapeHtml(emptyText)}</p>`;
+        return apps.map(app => `
+          <button class="quick-app-btn ${className}" type="button" data-quick-launch="${app.id}" title="${escapeHtml(app.name)} 실행">
+            <span class="quick-app-icon">${app.iconImage ? `<img src="${app.iconImage}" alt="" />` : '📦'}</span>
+            <div class="quick-app-content">
+              <span class="quick-app-name">${escapeHtml(app.name)}</span>
+              <span class="quick-app-desc">${escapeHtml(app.description || '설명 없음')}</span>
+            </div>
+          </button>
+        `).join('');
+      };
+
+      els.recentAppsList.innerHTML = renderList(recentApps, '실행한 앱이 아직 없어요', 'recent');
+      els.favoriteAppsList.innerHTML = renderList(favoriteApps, '즐겨찾기 앱이 없어요', 'favorite');
+    };
+
+    const toggleFavorite = (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      app.favorite = !app.favorite;
+      app.timestamp = Date.now();
+      persistLocalState();
+      queueCloudSave();
+      renderLibrary();
+      renderHomeShortcuts();
+    };
+
+    let draggedElement = null;
+    let draggedId = null;
+    const enableDragAndDrop = () => {
+      const cards = els.appsGrid.querySelectorAll('[data-id]');
+      cards.forEach(card => {
+        card.draggable = true;
+        card.addEventListener('dragstart', (e) => {
+          if (e.target.closest('button')) { e.preventDefault(); return; }
+          draggedElement = card;
+          draggedId = card.getAttribute('data-id');
+          card.classList.add('dragging');
+          try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', draggedId); } catch (_) {}
+        });
+        card.addEventListener('dragend', () => {
+          draggedElement = null;
+          draggedId = null;
+          card.classList.remove('dragging');
+          cards.forEach(c => c.classList.remove('drag-over'));
+        });
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (card === draggedElement) return;
+          card.classList.add('drag-over');
+        });
+        card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          if (!draggedId || draggedId === card.getAttribute('data-id')) return;
+          const draggedIndex = state.apps.findIndex(a => a.id === draggedId);
+          const targetIndex = state.apps.findIndex(a => a.id === card.getAttribute('data-id'));
+          if (draggedIndex !== -1 && targetIndex !== -1) {
+            const [draggedApp] = state.apps.splice(draggedIndex, 1);
+            state.apps.splice(targetIndex, 0, draggedApp);
+            persistLocalState();
+            queueCloudSave();
+            renderLibrary();
+            renderHomeShortcuts();
+          }
+          card.classList.remove('drag-over');
+        });
+      });
+    };
+
+    const renderLibrary = () => {
+      const query = state.searchQuery.trim().toLowerCase();
+      const filtered = query
+        ? state.apps.filter(app => (app.name + ' ' + (app.description || '')).toLowerCase().includes(query))
+        : state.apps;
+
+      if (!filtered.length) {
+        els.appsGrid.innerHTML = `
+          <div style="grid-column:1/-1;">
+            <div class="empty-state">
+              <span class="empty-badge">${state.apps.length ? '🔍' : '📦'}</span>
+              <h4>${state.apps.length ? '검색 결과가 없어요' : '아직 앱이 없어요'}</h4>
+              <p>${state.apps.length ? '검색어를 바꿔봐.' : '오른쪽 위 ＋ 버튼으로 첫 앱을 만들어봐.'}</p>
+            </div>
+          </div>`;
+        return;
+      }
+
+      els.appsGrid.innerHTML = filtered.map(app => `
+        <article class="app-card" data-id="${app.id}">
+          <div class="app-card-menu">
+            <button class="app-card-btn favorite ${app.favorite ? 'active' : ''}" type="button" data-favorite="${app.id}" title="즐겨찾기">
+              <svg viewBox="0 0 24 24"><path d="M12 17.2l-5.56 3.27 1.48-6.2L3 10.24l6.36-.53L12 4l2.64 5.71 6.36.53-4.92 4.03 1.48 6.2z" fill="currentColor"/></svg>
+            </button>
+            <button class="app-card-btn" type="button" data-edit="${app.id}" title="수정">
+              <svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z" fill="currentColor"/><path d="M13 6l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="app-card-btn delete" type="button" data-delete="${app.id}" title="삭제">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v6M14 10v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <div class="app-card-icon">${app.iconImage ? `<img src="${app.iconImage}" alt="" />` : '📦'}</div>
+          <div class="app-card-content">
+            <div class="app-card-name">${escapeHtml(app.name)}</div>
+            <div class="app-card-desc">${escapeHtml(app.description || '설명 없음')}</div>
+            <div class="app-card-date">${formatDate(app.date)}</div>
+          </div>
+        </article>
+      `).join('');
+
+      els.appsGrid.querySelectorAll('[data-id]').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('[data-edit]') || e.target.closest('[data-delete]') || e.target.closest('[data-favorite]')) return;
+          launchApp(card.getAttribute('data-id'));
+        });
+      });
+      els.appsGrid.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(btn.getAttribute('data-edit')); }));
+      els.appsGrid.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); deleteApp(btn.getAttribute('data-delete')); }));
+      els.appsGrid.querySelectorAll('[data-favorite]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(btn.getAttribute('data-favorite')); }));
+      enableDragAndDrop();
+    };
+
+    const renderVibeLibrary = () => {
+      const query = state.vibeSearchQuery.trim().toLowerCase();
+      const items = DEFAULT_BUILTINS.filter(item => (item.title + ' ' + item.desc).toLowerCase().includes(query));
+      els.vibeAppsGrid.innerHTML = items.map(item => `
+        <article class="built-card" data-built="${item.id}">
+          <div class="built-icon">${item.icon}</div>
+          <div class="built-content">
+            <strong>${escapeHtml(item.title)}</strong>
+            <span>${escapeHtml(item.desc)}</span>
+          </div>
+        </article>
+      `).join('') || `
+        <div style="grid-column:1/-1;">
+          <div class="empty-state">
+            <span class="empty-badge">🔎</span>
+            <h4>검색 결과가 없어요</h4>
+            <p>다른 키워드로 찾아봐.</p>
+          </div>
+        </div>`;
+      els.vibeAppsGrid.querySelectorAll('[data-built]').forEach(card => card.addEventListener('click', () => handleBuiltInAction(card.getAttribute('data-built'))));
+    };
+
+    const setModalOpen = (el, open) => {
+      if (open) el.classList.add('open'); else el.classList.remove('open');
+    };
+
+    const openAddModal = () => {
+      state.editingId = null;
+      state.formData = { name: '', description: '', date: '', iconImage: '', htmlContent: '' };
+      els.modalTitle.textContent = '새 앱 추가';
+      els.nameInput.value = '';
+      els.descInput.value = '';
+      els.dateInput.value = '';
+      els.iconInput.value = '';
+      els.htmlInput.value = '';
+      els.iconPreview.style.display = 'none';
+      els.htmlPreview.style.display = 'none';
+      setError('');
+      setModalOpen(els.modalBackdrop, true);
+      els.nameInput.focus();
+    };
+
+    const openEditModal = (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      state.editingId = appId;
+      state.formData = { name: app.name || '', description: app.description || '', date: app.date || '', iconImage: app.iconImage || '', htmlContent: app.htmlContent || '' };
+      els.modalTitle.textContent = '앱 수정';
+      els.nameInput.value = state.formData.name;
+      els.descInput.value = state.formData.description;
+      els.dateInput.value = state.formData.date;
+      els.iconInput.value = '';
+      els.htmlInput.value = '';
+      if (state.formData.iconImage) {
+        els.iconPreviewImg.innerHTML = `<img src="${state.formData.iconImage}" alt="" />`;
+        els.iconPreviewName.textContent = '아이콘 설정됨';
+        els.iconPreview.style.display = 'flex';
+      } else els.iconPreview.style.display = 'none';
+      if (state.formData.htmlContent) {
+        els.htmlPreviewName.textContent = 'HTML 파일 설정됨';
+        els.htmlPreview.style.display = 'flex';
+      } else els.htmlPreview.style.display = 'none';
+      setError('');
+      setModalOpen(els.modalBackdrop, true);
+      els.nameInput.focus();
+    };
+
+    const hideModal = () => setModalOpen(els.modalBackdrop, false);
+    const hideAuthModal = () => setModalOpen(els.authModal, false);
+    const hideProfileModal = () => setModalOpen(els.profileModal, false);
+    const showAuthModal = () => { updateAuthTab(); setModalOpen(els.authModal, true); };
+    const showProfileModal = () => { updateProfileUI(); setModalOpen(els.profileModal, true); };
+
+    const saveApp = async () => {
+      try {
+        const name = els.nameInput.value.trim();
+        const desc = els.descInput.value.trim();
+        const date = els.dateInput.value.trim();
+        if (!name) { setError('앱 이름을 입력해.'); return; }
+        if (!state.formData.htmlContent) { setError('HTML 파일을 업로드해.'); return; }
+        const now = Date.now();
+        if (state.editingId) {
+          const app = state.apps.find(a => a.id === state.editingId);
+          if (!app) { setError('앱을 찾을 수 없어요.'); return; }
+          app.name = name;
+          app.description = desc;
+          app.date = date;
+          if (state.formData.iconImage) app.iconImage = state.formData.iconImage;
+          if (state.formData.htmlContent) app.htmlContent = state.formData.htmlContent;
+          app.timestamp = now;
+        } else {
+          state.apps.unshift({ id: uid(), name, description: desc, date, iconImage: state.formData.iconImage || '', htmlContent: state.formData.htmlContent, favorite: false, lastOpened: 0, timestamp: now });
+        }
+        persistLocalState();
+        renderLibrary();
+        renderHomeShortcuts();
+        updateRuntimeCount();
+        hideModal();
+        queueCloudSave();
+      } catch (err) {
+        console.error(err);
+        setError('앱 저장 중 오류가 발생했어.');
+      }
+    };
+
+    const deleteApp = async (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      if (!confirm(`"${app.name}" 앱을 정말 삭제할까?`)) return;
+      state.apps = state.apps.filter(a => a.id !== appId);
+      delete state.runtimeStores[appId];
+      persistLocalState();
+      renderLibrary();
+      renderHomeShortcuts();
+      updateRuntimeCount();
+      if (state.currentUser) {
+        try { await deleteDoc(doc(db, 'users', state.currentUser.uid, 'apps', appId)); } catch (_) {}
+      }
+    };
+
+    const launchApp = async (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      if (!app.htmlContent || !app.htmlContent.trim()) { alert('이 앱의 HTML 파일이 없어요.'); return; }
+      app.lastOpened = Date.now();
+      persistLocalState();
+      renderHomeShortcuts();
+      queueCloudSave();
+      state.runtimeAppId = appId;
+      els.runtimeTitle.textContent = app.name || '앱';
+      els.runtimeFrame.srcdoc = buildRuntimeHtml(app);
+      showView('runtime');
+    };
+
+    const handleBuiltInAction = (actionId) => {
+      switch (actionId) {
+        case 'vibe-account': showProfileModal(); break;
+        case 'vibe-sync': showAuthModal(); break;
+        case 'vibe-backup': openBackupTools(); break;
+        case 'vibe-inspector': openStorageInspector(); break;
+        case 'vibe-about': openAboutPanel(); break;
+      }
+    };
+
+    const openBackupTools = () => {
+      const json = JSON.stringify({ apps: state.apps, runtimeStores: state.runtimeStores, profile: state.profile }, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `launcher-vibe-backup-${Date.now()}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    };
+
+    const openStorageInspector = () => {
+      const details = Object.entries(state.runtimeStores).slice(0, 8).map(([id, store]) => {
+        const app = state.apps.find(a => a.id === id);
+        return `${app?.name || id}: LS ${Object.keys(store.localStorage || {}).length}, SS ${Object.keys(store.sessionStorage || {}).length}`;
+      }).join('\n') || '저장된 런타임 데이터가 없습니다.';
+      alert(details);
+    };
+
+    const openAboutPanel = () => {
+      alert(`Launcher VIBE\n버전 1.0\n앱 ${state.apps.length}개\n런타임 저장소 ${Object.keys(state.runtimeStores || {}).length}개`);
+    };
+
+    const updateAuthTab = () => {
+      const isLogin = state.activeAuthTab === 'login';
+      els.loginTabBtn.classList.toggle('active', isLogin);
+      els.signupTabBtn.classList.toggle('active', !isLogin);
+      els.authSubmitBtn.textContent = isLogin ? '로그인' : '회원가입';
+      els.authSubmitBtn.classList.toggle('signup-mode', !isLogin);
+
+      if (els.authHelpText) {
+        const hint = authUseHint();
+        els.authHelpText.textContent = hint
+          ? `${hint} 이메일/비밀번호 로그인은 언제나 사용할 수 있습니다.`
+          : '이 계정은 앱 목록, 즐겨찾기, 런타임 저장 데이터를 사용자별로 동기화합니다.';
+      }
+    };
+
+    const isMobileLoginTarget = () => {
+      const ua = navigator.userAgent || '';
+      return /Android|iPhone|iPad|iPod|Mobi/i.test(ua) || window.innerWidth < 780;
+    };
+
+    const setProfilePhotoPreview = async (file) => {
+      if (!file) {
+        state.profilePhotoFile = null;
+        state.profilePhotoPreview = '';
+        els.photoFileInput.value = '';
+        els.photoPreviewImg.innerHTML = '';
+        els.photoPreviewName.textContent = '';
+        els.photoPreview.classList.remove('show');
+        return;
+      }
+      const url = await readFileAsDataURL(file);
+      state.profilePhotoFile = file;
+      state.profilePhotoPreview = url;
+      els.photoPreviewImg.innerHTML = `<img src="${url}" alt="" />`;
+      els.photoPreviewName.textContent = file.name;
+      els.photoPreview.classList.add('show');
+    };
+
+    const doAuthSubmit = async () => {
+      const email = els.authEmail.value.trim();
+      const password = els.authPassword.value.trim();
+      if (!email || !password) { alert('이메일과 비밀번호를 입력해.'); return; }
+
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+      } catch (persistErr) {
+        console.warn('Firebase persistence setup failed:', persistErr);
+      }
+
+      try {
+        if (state.activeAuthTab === 'login') {
+          await signInWithEmailAndPassword(auth, email, password);
+        } else {
+          await createUserWithEmailAndPassword(auth, email, password);
+        }
+        hideAuthModal();
+      } catch (e) {
+        const msg = String(e?.code || e?.message || '인증 실패');
+        if (msg.includes('auth/operation-not-allowed')) {
+          alert('Firebase 콘솔에서 이메일/비밀번호 로그인을 켜야 합니다.');
+          return;
+        }
+        if (msg.includes('auth/unauthorized-domain')) {
+          alert('이 주소는 Firebase 허용 도메인에 없어요. Netlify나 GitHub Pages 주소를 등록해야 합니다.');
+          return;
+        }
+        alert(e?.message || '인증 실패');
+      }
+    };
+
+    const doGoogleLogin = async () => {
+      try {
+        if (isInvalidLocalOrigin()) {
+          alert('Google 로그인은 Netlify, GitHub Pages 같은 https 주소에서만 동작합니다. 지금은 로컬 파일이라 로그인할 수 없어요.');
+          return;
+        }
+
+        hideAuthModal();
+
+        if (isMobileLoginTarget()) {
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        }
+
+        try {
+          await signInWithPopup(auth, googleProvider);
+          hideAuthModal();
+        } catch (popupErr) {
+          console.warn('Popup login failed, falling back to redirect:', popupErr);
+          await signInWithRedirect(auth, googleProvider);
+        }
+      } catch (e) {
+        console.error('Google login failed:', e);
+        alert(e?.message || 'Google 로그인 실패');
+      }
+    };
+
+    const saveProfile = async () => {
+      if (!state.currentUser) { alert('로그인이 필요합니다.'); return; }
+      const displayName = els.displayNameInput.value.trim();
+      let photoURL = state.profile.photoURL || state.currentUser.photoURL || '';
+
+      try {
+        if (state.profilePhotoFile) {
+          const file = state.profilePhotoFile;
+          if (!file.type.startsWith('image/')) throw new Error('이미지 파일만 업로드할 수 있어.');
+          if (file.size > 3 * 1024 * 1024) throw new Error('프로필 이미지는 3MB 이하여야 해.');
+          const path = `profile-images/${state.currentUser.uid}/${Date.now()}-${file.name}`.replace(/[^a-zA-Z0-9_./-]/g, '_');
+          const fileRef = storageRef(storage, path);
+          await uploadBytes(fileRef, file);
+          photoURL = await getDownloadURL(fileRef);
+        }
+      } catch (err) {
+        alert(err?.message || '프로필 이미지 업로드에 실패했어.');
+        return;
+      }
+
+      state.profile.displayName = displayName;
+      state.profile.photoURL = photoURL;
+
+      try {
+        await updateProfile(state.currentUser, { displayName, photoURL: photoURL || null });
+      } catch (_) {}
+      try {
+        await setDoc(doc(db, 'users', state.currentUser.uid), {
+          displayName,
+          photoURL,
+          email: state.currentUser.email || '',
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+      } catch (_) {}
+      state.profilePhotoFile = null;
+      state.profilePhotoPreview = '';
+      persistLocalState();
+      updateProfileUI();
+      updateSyncLabels();
+      hideProfileModal();
+    };
+
+    const updateSyncLabels = () => {
+      const onlineText = state.currentUser ? (state.cloudSyncPending ? '동기화 중' : '클라우드 동기화됨') : '로컬 저장';
+      els.syncStateText.textContent = onlineText;
+      els.authStateLabel.textContent = state.currentUser ? '로그인됨' : '로그아웃';
+      els.appTotal.textContent = state.apps.length;
+      els.runtimeCount.textContent = Object.keys(state.runtimeStores || {}).length;
+    };
+
+    const exportData = () => {
+      const payload = {
+        version: CURRENT_VERSION,
+        apps: state.apps,
+        runtimeStores: state.runtimeStores,
+        profile: state.profile,
+        exportedAt: new Date().toISOString(),
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `launcher-vibe-${Date.now()}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    };
+
+    const importData = async (file) => {
+      try {
+        const text = await readFileAsText(file);
+        const parsed = JSON.parse(text);
+        const apps = sanitizeApps(parsed.apps || parsed);
+        const runtimeStores = sanitizeRuntimeStores(parsed.runtimeStores || {});
+        if (!confirm('기존 앱을 이 파일 내용으로 바꿀까?')) return;
+        state.apps = apps;
+        state.runtimeStores = runtimeStores;
+        if (parsed.profile && typeof parsed.profile === 'object') state.profile = { ...state.profile, ...parsed.profile };
+        persistLocalState();
+        renderLibrary();
+        renderHomeShortcuts();
+        updateRuntimeCount();
+        updateProfileUI();
+        queueCloudSave();
+        alert('가져왔습니다.');
+      } catch (e) {
+        alert('파일을 읽을 수 없어요.');
+      }
+    };
+
+    const clearAllData = async () => {
+      if (!confirm('정말 모두 지울까요?')) return;
+      if (!confirm('정말정말요?')) return;
+      state.apps = [];
+      state.runtimeStores = {};
+      persistLocalState();
+      renderLibrary();
+      renderHomeShortcuts();
+      updateRuntimeCount();
+      if (state.currentUser) queueCloudSave();
+      alert('초기화했습니다.');
+    };
+
+    const applyInitialState = () => {
+      const local = loadLocalState();
+      if (local) {
+        state.apps = sanitizeApps(local.apps || []);
+        state.runtimeStores = sanitizeRuntimeStores(local.runtimeStores || {});
+        if (local.profile) state.profile = { ...state.profile, ...local.profile };
+      }
+      updateRuntimeCount();
+      renderLibrary();
+      renderVibeLibrary();
+      renderHomeShortcuts();
+      updateProfileUI();
+    };
+
+    const applyCloudAuthUser = async (user) => {
+      state.currentUser = user;
+      state.cloudReady = true;
+      state.profile.displayName = user.displayName || state.profile.displayName || '';
+      state.profile.photoURL = user.photoURL || state.profile.photoURL || '';
+      updateProfileUI();
+      updateSyncLabels();
+      await loadCloudAll();
+      renderLibrary();
+      renderHomeShortcuts();
+      updateProfileUI();
+      updateSyncLabels();
+      persistLocalState();
+    };
+
+    const attachEvents = () => {
+      els.settingsBtn.addEventListener('click', () => { updateRuntimeCount(); updateSyncLabels(); setModalOpen(els.settingsModal, true); });
+      els.profileChip.addEventListener('click', showProfileModal);
+      els.closeSettings.addEventListener('click', () => setModalOpen(els.settingsModal, false));
+      els.settingsModal.addEventListener('click', (e) => { if (e.target === els.settingsModal) setModalOpen(els.settingsModal, false); });
+      els.openAuthFromSettings.addEventListener('click', showAuthModal);
+      els.openProfileFromSettings.addEventListener('click', showProfileModal);
+      els.exportData.addEventListener('click', exportData);
+      els.importData.addEventListener('click', () => els.importFile.click());
+      els.importFile.addEventListener('change', (e) => { const file = e.target.files?.[0]; if (file) importData(file); e.target.value = ''; });
+      els.clearData.addEventListener('click', clearAllData);
+
+      els.toLibraryBtn.addEventListener('click', () => showView('library'));
+      els.toVibeLibraryBtn.addEventListener('click', () => showView('vibe'));
+      els.libraryBackBtn.addEventListener('click', () => showView('home'));
+      els.vibeBackBtn.addEventListener('click', () => showView('home'));
+      els.vibeRefreshBtn.addEventListener('click', () => renderVibeLibrary());
+      els.runtimeCloseBtn.addEventListener('click', () => showView('library'));
+      els.libraryAddBtn.addEventListener('click', openAddModal);
+      els.librarySearchInput.addEventListener('input', (e) => { state.searchQuery = e.target.value || ''; renderLibrary(); });
+      els.vibeSearchInput.addEventListener('input', (e) => { state.vibeSearchQuery = e.target.value || ''; renderVibeLibrary(); });
+
+      els.recentAppsList.addEventListener('click', (e) => {
+        const button = e.target.closest('[data-quick-launch]');
+        if (!button) return;
+        launchApp(button.getAttribute('data-quick-launch'));
+      });
+      els.favoriteAppsList.addEventListener('click', (e) => {
+        const button = e.target.closest('[data-quick-launch]');
+        if (!button) return;
+        launchApp(button.getAttribute('data-quick-launch'));
+      });
+
+      els.closeModalBtn.addEventListener('click', hideModal);
+      els.cancelBtn.addEventListener('click', hideModal);
+      els.saveBtn.addEventListener('click', saveApp);
+      els.modalBackdrop.addEventListener('click', (e) => { if (e.target === els.modalBackdrop) hideModal(); });
+
+      els.nameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); els.descInput.focus(); }
+      });
+
+      els.iconInput.addEventListener('change', async () => {
+        const file = els.iconInput.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) { setError('이미지 파일만 업로드할 수 있어.'); els.iconInput.value = ''; return; }
+        if (file.size > 2 * 1024 * 1024) { setError('이미지는 2MB 이하여야 해.'); els.iconInput.value = ''; return; }
+        try {
+          const data = await readFileAsDataURL(file);
+          state.formData.iconImage = data;
+          els.iconPreviewImg.innerHTML = `<img src="${data}" alt="" />`;
+          els.iconPreviewName.textContent = file.name;
+          els.iconPreview.style.display = 'flex';
+          setError('');
+        } catch {
+          setError('이미지를 읽는 중 오류가 발생했어.');
+          els.iconInput.value = ''; 
+        }
+      });
+      els.iconRemoveBtn.addEventListener('click', (e) => { e.preventDefault(); state.formData.iconImage = ''; els.iconInput.value = ''; els.iconPreview.style.display = 'none'; });
+
+      els.htmlInput.addEventListener('change', async () => {
+        const file = els.htmlInput.files?.[0];
+        if (!file) return;
+        if (!file.name.endsWith('.html') && !file.name.endsWith('.htm')) { setError('HTML 파일만 업로드할 수 있어.'); els.htmlInput.value = ''; return; }
+        if (file.size > 5 * 1024 * 1024) { setError('HTML 파일은 5MB 이하여야 해.'); els.htmlInput.value = ''; return; }
+        try {
+          const data = normalizeHtmlText(await readFileAsText(file));
+          state.formData.htmlContent = data;
+          els.htmlPreviewName.textContent = file.name;
+          els.htmlPreview.style.display = 'flex';
+          setError('');
+        } catch {
+          setError('HTML 파일을 읽는 중 오류가 발생했어.');
+          els.htmlInput.value = ''; 
+        }
+      });
+      els.htmlRemoveBtn.addEventListener('click', (e) => { e.preventDefault(); state.formData.htmlContent = ''; els.htmlInput.value = ''; els.htmlPreview.style.display = 'none'; });
+
+      els.loginTabBtn.addEventListener('click', () => { state.activeAuthTab = 'login'; updateAuthTab(); });
+      els.signupTabBtn.addEventListener('click', () => { state.activeAuthTab = 'signup'; updateAuthTab(); });
+      els.authSubmitBtn.addEventListener('click', doAuthSubmit);
+      els.googleLoginBtn.addEventListener('click', doGoogleLogin);
+      els.closeAuth.addEventListener('click', hideAuthModal);
+      els.authModal.addEventListener('click', (e) => { if (e.target === els.authModal) hideAuthModal(); });
+      els.openAuthFromSettings.addEventListener('click', showAuthModal);
+
+      els.closeProfile.addEventListener('click', hideProfileModal);
+      els.profileModal.addEventListener('click', (e) => { if (e.target === els.profileModal) hideProfileModal(); });
+      els.photoFileInput.addEventListener('change', async () => {
+        const file = els.photoFileInput.files?.[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          alert('이미지 파일만 업로드할 수 있어.');
+          els.photoFileInput.value = '';
+          return;
+        }
+        if (file.size > 3 * 1024 * 1024) {
+          alert('프로필 이미지는 3MB 이하여야 해.');
+          els.photoFileInput.value = '';
+          return;
+        }
+        try {
+          await setProfilePhotoPreview(file);
+        } catch {
+          alert('이미지 미리보기를 불러오지 못했어.');
+          els.photoFileInput.value = '';
+        }
+      });
+      els.photoRemoveBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        state.profilePhotoFile = null;
+        state.profilePhotoPreview = '';
+        els.photoFileInput.value = '';
+        updateProfileUI();
+      });
+      els.saveProfileBtn.addEventListener('click', saveProfile);
+      els.logoutBtn.addEventListener('click', async () => { await signOut(auth); hideProfileModal(); });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (els.modalBackdrop.classList.contains('open')) hideModal();
+          else if (els.authModal.classList.contains('open')) hideAuthModal();
+          else if (els.profileModal.classList.contains('open')) hideProfileModal();
+          else if (state.currentView === 'runtime') showView('library');
+          else if (state.currentView === 'library' || state.currentView === 'vibe') showView('home');
+        }
+      });
+
+      window.addEventListener('message', (e) => {
+        const msg = e.data;
+        if (!msg || msg.__launcher !== true) return;
+        if (msg.type === 'runtime-storage') {
+          updateRuntimeStore(msg.appId, msg.kind, msg.data || {});
+        }
+      });
+
+      window.addEventListener('beforeunload', () => {
+        persistLocalState();
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') persistLocalState();
+      });
+    };
+
+    const initAuth = () => {
+      getRedirectResult(auth)
+        .then((result) => {
+          if (result?.user) {
+            state.currentUser = result.user;
+          }
+        })
+        .catch((err) => {
+          console.error('Firebase redirect result error:', err);
+        });
+
+      onAuthStateChanged(auth, async (user) => {
+        state.currentUser = user || null;
+        if (user) {
+          await applyCloudAuthUser(user);
+        } else {
+          state.cloudReady = false;
+          updateProfileUI();
+          updateSyncLabels();
+          if (els.authHelpText && authUseHint()) {
+            els.authHelpText.textContent = `${authUseHint()} 이메일/비밀번호 로그인은 사용할 수 있습니다.`;
+          }
+        }
+      });
+    };
+
+    const init = () => {
+      try {
+        applyInitialState();
+        updateAuthTab();
+        attachEvents();
+        initAuth();
+        renderLibrary();
+        renderVibeLibrary();
+        renderHomeShortcuts();
+        updateProfileUI();
+        updateSyncLabels();
+      } catch (err) {
+        console.error('Initialization error:', err);
+        applyInitialState();
+      }
+    };
+
+    init();
+  </script>
+</body>
+</html>
