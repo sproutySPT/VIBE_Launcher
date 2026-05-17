@@ -678,12 +678,42 @@
     }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; }
 
+    .profile-status-display {
+      padding: 12px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 12px;
+    }
+    .profile-status-display .status-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--text-muted2);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    .profile-status-display .status-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .profile-status-display .status-message {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
     @media (max-height: 600px) {
       .modal-panel { max-height: 100vh; border-radius: 28px 28px 0 0; }
     }
   </style>
 </head>
 <body>
+  <audio id="bgmAudio" autoplay loop muted>
+    <source src="bgm.mp3" type="audio/mpeg">
+  </audio>
+
   <div class="view home active" id="homeView">
     <div class="topbar">
       <button class="settings-btn" id="settingsBtn" title="설정">⚙️</button>
@@ -706,7 +736,7 @@
           <span class="library-btn-text">라이브러리 열기</span>
           <span class="library-btn-sub">내 앱 관리하기</span>
         </button>
-        <button class="vibe-mini-btn" id="toVibeLibraryBtn" type="button">ℹ️ VIBE APPS</button>
+        <button class="vibe-mini-btn" id="toVibeLibraryBtn" type="button">ℹ️ 커뮤니티 앱</button>
       </div>
 
       <div class="home-shortcuts">
@@ -742,11 +772,11 @@
     <header class="vibe-header">
       <div class="title-row">
         <button class="lib-back-btn" id="vibeBackBtn" title="돌아가기">←</button>
-        <h2>VIBE APPS</h2>
-        <button class="lib-add-btn" id="vibeRefreshBtn" title="새로고침">↻</button>
+        <h2>커뮤니티 앱</h2>
+        <button class="lib-add-btn" id="vibeAddBtn" title="앱 추가">＋</button>
       </div>
       <div class="lib-search">
-        <input type="text" id="vibeSearchInput" placeholder="설정 앱 검색..." />
+        <input type="text" id="vibeSearchInput" placeholder="앱 검색..." />
       </div>
     </header>
     <div class="content-scroll">
@@ -760,7 +790,7 @@
       <button class="runtime-close" id="runtimeCloseBtn" title="닫기">✕</button>
     </header>
     <div class="runtime-content">
-      <iframe class="runtime-iframe" id="runtimeFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"></iframe>
+      <iframe class="runtime-iframe" id="runtimeFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-modals"></iframe>
     </div>
   </div>
 
@@ -780,15 +810,15 @@
         <div class="settings-section">
           <h4>계정</h4>
           <p>상태: <strong id="authStateLabel">로그아웃</strong></p>
-          <button class="modal-btn" id="openAuthFromSettings">🔑 로그인 / 회원가입</button>
-          <button class="modal-btn" id="openProfileFromSettings">👤 프로필 편집</button>
+          <button class="btn btn-primary" id="openAuthFromSettings">🔑 로그인 / 회원가입</button>
+          <button class="btn btn-secondary" id="openProfileFromSettings" style="margin-top:8px;">👤 프로필 편집</button>
         </div>
         <div class="settings-section">
           <h4>데이터</h4>
-          <button class="modal-btn" id="exportData">📥 내보내기</button>
-          <button class="modal-btn" id="importData">📤 가져오기</button>
+          <button class="btn btn-secondary" id="exportData" style="margin-bottom:8px;">📥 내보내기</button>
+          <button class="btn btn-secondary" id="importData" style="margin-bottom:8px;">📤 가져오기</button>
           <input type="file" id="importFile" accept=".json" style="display:none;">
-          <button class="modal-btn btn-danger" id="clearData">🗑️ 초기화</button>
+          <button class="btn btn-danger" id="clearData">🗑️ 초기화</button>
         </div>
       </div>
     </div>
@@ -814,6 +844,13 @@
             <label class="form-label">비밀번호</label>
             <input class="form-input" id="authPassword" type="password" placeholder="비밀번호" autocomplete="current-password" />
           </div>
+          <div id="signupOnly" style="display:none;">
+            <div class="form-group">
+              <label class="form-label">비밀번호 확인</label>
+              <input class="form-input" id="authPasswordConfirm" type="password" placeholder="비밀번호 확인" />
+            </div>
+          </div>
+          <div class="error-msg" id="authErrorMsg"></div>
           <div class="auth-actions" style="margin-top:12px;">
             <button class="btn btn-primary" id="authSubmitBtn" type="button">로그인</button>
             <button class="google-btn" id="googleLoginBtn" type="button">Google로 계속</button>
@@ -827,7 +864,7 @@
   <div class="modal-backdrop" id="profileModal">
     <div class="modal-panel">
       <header class="modal-header">
-        <h3>프로필</h3>
+        <h3>👤 프로필</h3>
         <button class="modal-close" id="closeProfile" type="button">✕</button>
       </header>
       <div class="modal-content">
@@ -841,6 +878,10 @@
           <div class="form-group">
             <label class="form-label">표시 이름</label>
             <input class="form-input" id="displayNameInput" type="text" placeholder="사용자 이름" maxlength="40" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">상태 메시지</label>
+            <textarea class="form-input" id="statusMessageInput" placeholder="상태 메시지를 입력하세요..." maxlength="150"></textarea>
           </div>
           <div class="form-group">
             <label class="form-label">프로필 이미지 업로드</label>
@@ -857,6 +898,7 @@
             </div>
             <div class="profile-upload-tip">사진은 Firebase Storage에 업로드됩니다.</div>
           </div>
+          <div class="error-msg" id="profileErrorMsg"></div>
           <div class="auth-actions" style="margin-top:12px;">
             <button class="btn btn-primary" id="saveProfileBtn" type="button">프로필 저장</button>
             <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
@@ -883,7 +925,7 @@
           <label class="form-label">설명</label>
           <textarea id="descInput" class="form-input" placeholder="앱에 대한 간단한 설명..." maxlength="200"></textarea>
         </div>
-        <div class="form-group">
+        <div class="form-group" id="dateFormGroup">
           <label class="form-label">출시 날짜</label>
           <input type="date" id="dateInput" class="form-input" />
         </div>
@@ -947,7 +989,9 @@
       getDocs,
       collection,
       deleteDoc,
-      serverTimestamp
+      serverTimestamp,
+      query,
+      where
     } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
     import {
       getStorage,
@@ -974,7 +1018,8 @@
     const googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-    const STORAGE_KEY = 'launcherVibeLocalState.v2';
+    const STORAGE_KEY = 'launcherVibeLocalState.v3';
+    const PROFILE_KEY = 'launcherVibeProfile.v1';
 
     const isInvalidLocalOrigin = () => {
       const proto = String(window.location.protocol || '');
@@ -987,1152 +1032,806 @@
         ? 'Google 로그인은 배포된 https 주소에서만 안정적으로 동작합니다.'
         : '';
     };
+
     const CURRENT_VERSION = '1.0';
-    const DEFAULT_BUILTINS = [
-      { id: 'vibe-account', icon: '👤', title: '계정 / 프로필', desc: '로그인, 프로필 수정, 로그아웃' , action: 'profile' },
-      { id: 'vibe-sync', icon: '☁️', title: '클라우드 동기화', desc: 'Firebase로 앱과 저장 데이터 동기화', action: 'sync' },
-      { id: 'vibe-backup', icon: '📦', title: '백업 / 복원', desc: 'JSON 내보내기, 가져오기', action: 'backup' },
-      { id: 'vibe-inspector', icon: '🔎', title: '앱 저장소 확인', desc: '앱별 런타임 저장소 상태 보기', action: 'storage' },
-      { id: 'vibe-about', icon: 'ℹ️', title: '런처 정보', desc: '버전과 현재 상태 확인', action: 'about' },
-    ];
 
     const state = {
       currentView: 'home',
-      apps: [],
-      runtimeStores: {},
-      searchQuery: '',
-      vibeSearchQuery: '',
-      editingId: null,
-      runtimeAppId: null,
+      editingAppId: null,
+      isSignupMode: false,
       currentUser: null,
-      profile: { displayName: '', photoURL: '' },
-      profilePhotoFile: null,
-      profilePhotoPreview: '',
-      formData: { name: '', description: '', date: '', iconImage: '', htmlContent: '' },
-      activeAuthTab: 'login',
-      cloudReady: false,
-      cloudSyncPending: false,
-    };
-
-    const els = {
-      homeView: document.getElementById('homeView'),
-      libraryView: document.getElementById('libraryView'),
-      vibeLibraryView: document.getElementById('vibeLibraryView'),
-      runtimeView: document.getElementById('runtimeView'),
-      recentAppsList: document.getElementById('recentAppsList'),
-      favoriteAppsList: document.getElementById('favoriteAppsList'),
-      settingsBtn: document.getElementById('settingsBtn'),
-      profileChip: document.getElementById('profileChip'),
-      profileChipAvatar: document.getElementById('profileChipAvatar'),
-      profileChipName: document.getElementById('profileChipName'),
-      toLibraryBtn: document.getElementById('toLibraryBtn'),
-      toVibeLibraryBtn: document.getElementById('toVibeLibraryBtn'),
-      libraryBackBtn: document.getElementById('libraryBackBtn'),
-      vibeBackBtn: document.getElementById('vibeBackBtn'),
-      vibeRefreshBtn: document.getElementById('vibeRefreshBtn'),
-      libraryAddBtn: document.getElementById('libraryAddBtn'),
-      librarySearchInput: document.getElementById('librarySearchInput'),
-      vibeSearchInput: document.getElementById('vibeSearchInput'),
-      appsGrid: document.getElementById('appsGrid'),
-      vibeAppsGrid: document.getElementById('vibeAppsGrid'),
-      runtimeTitle: document.getElementById('runtimeTitle'),
-      runtimeCloseBtn: document.getElementById('runtimeCloseBtn'),
-      runtimeFrame: document.getElementById('runtimeFrame'),
-      settingsModal: document.getElementById('settingsModal'),
-      closeSettings: document.getElementById('closeSettings'),
-      appTotal: document.getElementById('appTotal'),
-      runtimeCount: document.getElementById('runtimeCount'),
-      authStateLabel: document.getElementById('authStateLabel'),
-      openAuthFromSettings: document.getElementById('openAuthFromSettings'),
-      openProfileFromSettings: document.getElementById('openProfileFromSettings'),
-      exportData: document.getElementById('exportData'),
-      importData: document.getElementById('importData'),
-      importFile: document.getElementById('importFile'),
-      clearData: document.getElementById('clearData'),
-      authModal: document.getElementById('authModal'),
-      closeAuth: document.getElementById('closeAuth'),
-      loginTabBtn: document.getElementById('loginTabBtn'),
-      signupTabBtn: document.getElementById('signupTabBtn'),
-      authEmail: document.getElementById('authEmail'),
-      authPassword: document.getElementById('authPassword'),
-      authSubmitBtn: document.getElementById('authSubmitBtn'),
-      googleLoginBtn: document.getElementById('googleLoginBtn'),
-      authHelpText: document.getElementById('authHelpText'),
-      profileModal: document.getElementById('profileModal'),
-      closeProfile: document.getElementById('closeProfile'),
-      profileEmailText: document.getElementById('profileEmailText'),
-      profileUidText: document.getElementById('profileUidText'),
-      syncStateText: document.getElementById('syncStateText'),
-      displayNameInput: document.getElementById('displayNameInput'),
-      photoFileInput: document.getElementById('photoFileInput'),
-      photoPreview: document.getElementById('photoPreview'),
-      photoPreviewImg: document.getElementById('photoPreviewImg'),
-      photoPreviewName: document.getElementById('photoPreviewName'),
-      photoRemoveBtn: document.getElementById('photoRemoveBtn'),
-      saveProfileBtn: document.getElementById('saveProfileBtn'),
-      logoutBtn: document.getElementById('logoutBtn'),
-      modalBackdrop: document.getElementById('modalBackdrop'),
-      modalTitle: document.getElementById('modalTitle'),
-      closeModalBtn: document.getElementById('closeModalBtn'),
-      nameInput: document.getElementById('nameInput'),
-      descInput: document.getElementById('descInput'),
-      dateInput: document.getElementById('dateInput'),
-      iconInput: document.getElementById('iconInput'),
-      iconPreview: document.getElementById('iconPreview'),
-      iconPreviewImg: document.getElementById('iconPreviewImg'),
-      iconPreviewName: document.getElementById('iconPreviewName'),
-      iconRemoveBtn: document.getElementById('iconRemoveBtn'),
-      htmlInput: document.getElementById('htmlInput'),
-      htmlPreview: document.getElementById('htmlPreview'),
-      htmlPreviewName: document.getElementById('htmlPreviewName'),
-      htmlRemoveBtn: document.getElementById('htmlRemoveBtn'),
-      errorMsg: document.getElementById('errorMsg'),
-      cancelBtn: document.getElementById('cancelBtn'),
-      saveBtn: document.getElementById('saveBtn'),
-    };
-
-    const escapeHtml = (str) => {
-      const div = document.createElement('div');
-      div.textContent = String(str ?? '');
-      return div.innerHTML;
-    };
-
-    const uid = () => 'app-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
-    const deepClone = (obj) => JSON.parse(JSON.stringify(obj ?? {}));
-    const safeJson = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
-
-    const loadLocalState = () => {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        return parsed && typeof parsed === 'object' ? parsed : null;
-      } catch {
-        return null;
+      apps: [],
+      vibeApps: [],
+      favorites: [],
+      recent: [],
+      userProfile: {
+        displayName: '게스트',
+        statusMessage: '',
+        photoURL: null
       }
     };
 
-    const persistLocalState = () => {
-      const payload = {
-        version: CURRENT_VERSION,
-        apps: state.apps,
-        runtimeStores: state.runtimeStores,
-        profile: state.profile,
-      };
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); } catch (_) {}
+    // BGM 관리
+    const bgmAudio = document.getElementById('bgmAudio');
+    const enableBGM = () => {
+      if (bgmAudio && bgmAudio.muted) {
+        bgmAudio.muted = false;
+        bgmAudio.play().catch(() => {});
+      }
     };
 
-    const sanitizeApps = (apps) => {
-      if (!Array.isArray(apps)) return [];
-      return apps.map(app => ({
-        id: app.id || uid(),
-        name: app.name || '무제 앱',
-        description: app.description || '',
-        date: app.date || '',
-        iconImage: app.iconImage || '',
-        htmlContent: app.htmlContent || '',
-        favorite: Boolean(app.favorite),
-        lastOpened: Number(app.lastOpened || 0),
-        timestamp: Number(app.timestamp || Date.now()),
+    // 프로필 저장/로드 함수
+    const saveProfileLocally = () => {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(state.userProfile));
+    };
+
+    const loadProfileLocally = () => {
+      try {
+        const saved = localStorage.getItem(PROFILE_KEY);
+        if (saved) {
+          state.userProfile = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.log('프로필 로드 실패', e);
+      }
+    };
+
+    const saveUserProfileToFirebase = async (user) => {
+      if (!user) return;
+      try {
+        await setDoc(doc(db, 'users', user.uid), {
+          displayName: state.userProfile.displayName,
+          statusMessage: state.userProfile.statusMessage,
+          photoURL: state.userProfile.photoURL,
+          email: user.email,
+          lastUpdated: serverTimestamp()
+        }, { merge: true });
+        saveProfileLocally();
+      } catch (e) {
+        console.error('프로필 저장 실패:', e);
+      }
+    };
+
+    const loadUserProfileFromFirebase = async (user) => {
+      if (!user) {
+        loadProfileLocally();
+        return;
+      }
+      try {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          state.userProfile.displayName = data.displayName || '게스트';
+          state.userProfile.statusMessage = data.statusMessage || '';
+          state.userProfile.photoURL = data.photoURL || null;
+        } else {
+          loadProfileLocally();
+        }
+      } catch (e) {
+        console.log('클라우드 프로필 로드 실패, 로컬 사용:', e);
+        loadProfileLocally();
+      }
+    };
+
+    // UI 업데이트
+    const updateProfileChip = () => {
+      const chip = document.getElementById('profileChip');
+      const avatar = document.getElementById('profileChipAvatar');
+      const name = document.getElementById('profileChipName');
+
+      if (state.currentUser) {
+        avatar.style.display = 'none';
+        if (state.userProfile.photoURL) {
+          const img = document.createElement('img');
+          img.src = state.userProfile.photoURL;
+          avatar.replaceWith(img);
+          img.id = 'profileChipAvatar';
+        } else {
+          avatar.textContent = state.userProfile.displayName.charAt(0).toUpperCase() || '👤';
+          avatar.style.display = 'inline-flex';
+        }
+        name.textContent = state.userProfile.displayName || state.currentUser.email;
+      } else {
+        avatar.textContent = '👤';
+        avatar.style.display = 'inline-flex';
+        name.textContent = '로그인';
+      }
+    };
+
+    const updateAuthState = async (user) => {
+      state.currentUser = user;
+      if (user) {
+        await loadUserProfileFromFirebase(user);
+        document.getElementById('authStateLabel').textContent = '로그인됨';
+        document.getElementById('openProfileFromSettings').style.display = 'inline-block';
+      } else {
+        state.userProfile = { displayName: '게스트', statusMessage: '', photoURL: null };
+        document.getElementById('authStateLabel').textContent = '로그아웃';
+        document.getElementById('openProfileFromSettings').style.display = 'none';
+      }
+      updateProfileChip();
+      renderApps();
+    };
+
+    // 로그인/회원가입
+    const handleAuthSubmit = async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value;
+      const errorMsg = document.getElementById('authErrorMsg');
+
+      errorMsg.classList.remove('show');
+      errorMsg.textContent = '';
+
+      if (!email || !password) {
+        errorMsg.textContent = '이메일과 비밀번호를 입력해주세요.';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      if (state.isSignupMode) {
+        const confirmPassword = document.getElementById('authPasswordConfirm').value;
+        if (password !== confirmPassword) {
+          errorMsg.textContent = '비밀번호가 일치하지 않습니다.';
+          errorMsg.classList.add('show');
+          return;
+        }
+        if (password.length < 6) {
+          errorMsg.textContent = '비밀번호는 최소 6자 이상이어야 합니다.';
+          errorMsg.classList.add('show');
+          return;
+        }
+        try {
+          const result = await createUserWithEmailAndPassword(auth, email, password);
+          state.userProfile.displayName = email.split('@')[0];
+          await saveUserProfileToFirebase(result.user);
+          closeAuthModal();
+          enableBGM();
+        } catch (e) {
+          errorMsg.textContent = '회원가입 실패: ' + (e.message || '알 수 없는 오류');
+          errorMsg.classList.add('show');
+        }
+      } else {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          closeAuthModal();
+          enableBGM();
+        } catch (e) {
+          errorMsg.textContent = '로그인 실패: ' + (e.message || '알 수 없는 오류');
+          errorMsg.classList.add('show');
+        }
+      }
+    };
+
+    // Google 로그인
+    const handleGoogleLogin = async () => {
+      try {
+        if (isInvalidLocalOrigin()) {
+          alert('Google 로그인은 배포된 https 주소에서만 작동합니다.');
+          return;
+        }
+        if (window.location.protocol === 'file:' || window.location.origin === 'null') {
+          alert('배포된 주소에서 사용해주세요.');
+          return;
+        }
+        try {
+          const result = await signInWithPopup(auth, googleProvider);
+          state.userProfile.displayName = result.user.displayName || result.user.email.split('@')[0];
+          await saveUserProfileToFirebase(result.user);
+          closeAuthModal();
+          enableBGM();
+        } catch (popupError) {
+          if (popupError.code !== 'auth/popup-closed-by-user') {
+            console.error(popupError);
+          }
+        }
+      } catch (e) {
+        console.error('Google 로그인 오류:', e);
+      }
+    };
+
+    // 모달 제어
+    const openAuthModal = () => {
+      document.getElementById('authModal').classList.add('open');
+      enableBGM();
+    };
+
+    const closeAuthModal = () => {
+      document.getElementById('authModal').classList.remove('open');
+      document.getElementById('authEmail').value = '';
+      document.getElementById('authPassword').value = '';
+      document.getElementById('authPasswordConfirm').value = '';
+      document.getElementById('authErrorMsg').textContent = '';
+      document.getElementById('authErrorMsg').classList.remove('show');
+    };
+
+    const openProfileModal = async () => {
+      await loadUserProfileFromFirebase(state.currentUser);
+      document.getElementById('displayNameInput').value = state.userProfile.displayName;
+      document.getElementById('statusMessageInput').value = state.userProfile.statusMessage;
+      document.getElementById('profileEmailText').textContent = state.currentUser?.email || '-';
+      document.getElementById('profileUidText').textContent = state.currentUser?.uid || '-';
+      document.getElementById('syncStateText').textContent = state.currentUser ? '클라우드' : '로컬';
+      document.getElementById('profileModal').classList.add('open');
+    };
+
+    const closeProfileModal = () => {
+      document.getElementById('profileModal').classList.remove('open');
+    };
+
+    // 프로필 저장
+    const saveProfile = async () => {
+      const displayName = document.getElementById('displayNameInput').value.trim();
+      const statusMessage = document.getElementById('statusMessageInput').value.trim();
+
+      if (!displayName) {
+        alert('이름을 입력해주세요.');
+        return;
+      }
+
+      state.userProfile.displayName = displayName;
+      state.userProfile.statusMessage = statusMessage;
+
+      if (state.currentUser) {
+        await saveUserProfileToFirebase(state.currentUser);
+      } else {
+        saveProfileLocally();
+      }
+
+      updateProfileChip();
+      renderApps();
+      closeProfileModal();
+    };
+
+    // 로그아웃
+    const handleLogout = async () => {
+      if (confirm('로그아웃하시겠습니까?')) {
+        await signOut(auth);
+        closeProfileModal();
+      }
+    };
+
+    // 앱 렌더링
+    const renderApps = (searchQuery = '') => {
+      const appsGrid = document.getElementById('appsGrid');
+      const query = searchQuery.toLowerCase();
+      const filtered = state.apps.filter(app =>
+        app.name.toLowerCase().includes(query) ||
+        app.desc.toLowerCase().includes(query)
+      );
+
+      appsGrid.innerHTML = '';
+      if (filtered.length === 0) {
+        appsGrid.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-badge">📭</span>
+            <h4>앱이 없습니다</h4>
+            <p>새 앱을 추가하여 시작하세요</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(app => {
+        const card = createAppCard(app, false);
+        appsGrid.appendChild(card);
+      });
+    };
+
+    const renderVibeApps = (searchQuery = '') => {
+      const vibeAppsGrid = document.getElementById('vibeAppsGrid');
+      const query = searchQuery.toLowerCase();
+      const filtered = state.vibeApps.filter(app =>
+        app.name.toLowerCase().includes(query) ||
+        app.desc.toLowerCase().includes(query)
+      );
+
+      vibeAppsGrid.innerHTML = '';
+      if (filtered.length === 0) {
+        vibeAppsGrid.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-badge">📭</span>
+            <h4>앱이 없습니다</h4>
+            <p>새 앱을 추가하여 시작하세요</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(app => {
+        const card = createAppCard(app, true);
+        vibeAppsGrid.appendChild(card);
+      });
+    };
+
+    const createAppCard = (app, isVibeApp) => {
+      const card = document.createElement('div');
+      card.className = 'app-card';
+      card.innerHTML = `
+        <div class="app-card-menu">
+          <button class="app-card-btn favorite ${app.favorite ? 'active' : ''}" title="즐겨찾기">⭐</button>
+          <button class="app-card-btn" title="실행" style="cursor: pointer;">▶️</button>
+          <button class="app-card-btn delete" title="삭제">🗑️</button>
+        </div>
+        <div class="app-card-icon">
+          ${app.icon ? `<img src="${app.icon}" alt="${app.name}">` : '📦'}
+        </div>
+        <div class="app-card-content">
+          <div class="app-card-name">${app.name}</div>
+          <div class="app-card-desc">${app.desc}</div>
+          ${app.date ? `<div class="app-card-date">${app.date}</div>` : ''}
+        </div>
+      `;
+
+      const favBtn = card.querySelector('.favorite');
+      const runBtn = card.querySelector('button:nth-child(2)');
+      const delBtn = card.querySelector('.delete');
+
+      favBtn.addEventListener('click', () => {
+        app.favorite = !app.favorite;
+        favBtn.classList.toggle('active');
+        saveState();
+        updateShortcuts();
+      });
+
+      runBtn.addEventListener('click', () => {
+        if (app.html) {
+          runApp(app);
+        }
+      });
+
+      delBtn.addEventListener('click', () => {
+        if (confirm(`"${app.name}"을(를) 삭제하시겠습니까?`)) {
+          if (isVibeApp) {
+            state.vibeApps = state.vibeApps.filter(a => a.id !== app.id);
+            renderVibeApps();
+          } else {
+            state.apps = state.apps.filter(a => a.id !== app.id);
+            renderApps();
+          }
+          saveState();
+          updateSettings();
+        }
+      });
+
+      return card;
+    };
+
+    const runApp = (app) => {
+      if (!app.html) {
+        alert('실행 가능한 HTML 파일이 없습니다.');
+        return;
+      }
+
+      document.getElementById('runtimeTitle').textContent = app.name;
+      const frame = document.getElementById('runtimeFrame');
+
+      // 파일 내용을 Blob으로 변환하여 Data URL 생성
+      const blob = new Blob([app.html], { type: 'text/html; charset=utf-8' });
+      const dataUrl = URL.createObjectURL(blob);
+      frame.src = dataUrl;
+
+      switchView('runtime');
+
+      // 최근 실행 기록 추가
+      state.recent = state.recent.filter(id => id !== app.id);
+      state.recent.unshift(app.id);
+      state.recent = state.recent.slice(0, 5);
+      saveState();
+      updateShortcuts();
+    };
+
+    // 상태 저장/로드
+    const saveState = () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        apps: state.apps,
+        vibeApps: state.vibeApps,
+        favorites: state.favorites,
+        recent: state.recent
       }));
     };
 
-    const sanitizeRuntimeStores = (stores) => {
-      const out = {};
-      if (!stores || typeof stores !== 'object') return out;
-      for (const [appId, store] of Object.entries(stores)) {
-        out[appId] = {
-          localStorage: store?.localStorage && typeof store.localStorage === 'object' ? deepClone(store.localStorage) : {},
-          sessionStorage: store?.sessionStorage && typeof store.sessionStorage === 'object' ? deepClone(store.sessionStorage) : {},
-        };
-      }
-      return out;
-    };
-
-    const setError = (msg) => {
-      if (msg) {
-        els.errorMsg.textContent = msg;
-        els.errorMsg.classList.add('show');
-      } else {
-        els.errorMsg.classList.remove('show');
-      }
-    };
-
-    const showView = (viewName) => {
-      state.currentView = viewName;
-      [els.homeView, els.libraryView, els.vibeLibraryView, els.runtimeView].forEach(v => v.classList.remove('active'));
-      if (viewName === 'home') els.homeView.classList.add('active');
-      if (viewName === 'library') { els.libraryView.classList.add('active'); renderLibrary(); }
-      if (viewName === 'vibe') { els.vibeLibraryView.classList.add('active'); renderVibeLibrary(); }
-      if (viewName === 'runtime') els.runtimeView.classList.add('active');
-    };
-
-    const formatDate = (dateStr) => {
-      if (!dateStr) return '출시일 미정';
+    const loadState = () => {
       try {
-        const date = new Date(dateStr + 'T00:00:00');
-        return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' });
-      } catch {
-        return dateStr;
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const data = JSON.parse(saved);
+          state.apps = data.apps || [];
+          state.vibeApps = data.vibeApps || [];
+          state.favorites = data.favorites || [];
+          state.recent = data.recent || [];
+        }
+      } catch (e) {
+        console.log('상태 로드 실패', e);
       }
     };
 
-    const normalizeHtmlText = (text) => String(text ?? '');
+    // 앱 추가/편집 모달
+    const openAppModal = (isVibeApp = false) => {
+      state.editingAppId = null;
+      document.getElementById('modalTitle').textContent = '새 앱 추가';
+      document.getElementById('dateFormGroup').style.display = isVibeApp ? 'none' : 'block';
+      document.getElementById('nameInput').value = '';
+      document.getElementById('descInput').value = '';
+      document.getElementById('dateInput').value = '';
+      clearFileInputs();
+      document.getElementById('modalBackdrop').classList.add('open');
+      document.getElementById('modalBackdrop').dataset.isVibeApp = isVibeApp;
+    };
 
-    const readFileAsText = (file) => new Promise((resolve, reject) => {
+    const closeAppModal = () => {
+      document.getElementById('modalBackdrop').classList.remove('open');
+      document.getElementById('errorMsg').textContent = '';
+      document.getElementById('errorMsg').classList.remove('show');
+    };
+
+    const clearFileInputs = () => {
+      document.getElementById('iconInput').value = '';
+      document.getElementById('htmlInput').value = '';
+      document.getElementById('iconPreview').classList.remove('show');
+      document.getElementById('htmlPreview').classList.remove('show');
+    };
+
+    const saveApp = async () => {
+      const name = document.getElementById('nameInput').value.trim();
+      const desc = document.getElementById('descInput').value.trim();
+      const date = document.getElementById('dateInput').value;
+      const iconInput = document.getElementById('iconInput');
+      const htmlInput = document.getElementById('htmlInput');
+      const errorMsg = document.getElementById('errorMsg');
+
+      errorMsg.classList.remove('show');
+      errorMsg.textContent = '';
+
+      if (!name) {
+        errorMsg.textContent = '앱 이름을 입력해주세요.';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      if (!htmlInput.files.length) {
+        errorMsg.textContent = 'HTML 파일을 선택해주세요.';
+        errorMsg.classList.add('show');
+        return;
+      }
+
+      const app = {
+        id: state.editingAppId || Date.now().toString(),
+        name,
+        desc,
+        date: date || '',
+        icon: null,
+        html: null
+      };
+
+      // Icon 읽기
+      if (iconInput.files.length) {
+        const iconFile = iconInput.files[0];
+        app.icon = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.readAsDataURL(iconFile);
+        });
+      }
+
+      // HTML 읽기
+      if (htmlInput.files.length) {
+        const htmlFile = htmlInput.files[0];
+        app.html = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target.result);
+          reader.readAsText(htmlFile);
+        });
+      }
+
+      const isVibeApp = document.getElementById('modalBackdrop').dataset.isVibeApp === 'true';
+      if (isVibeApp) {
+        const existing = state.vibeApps.findIndex(a => a.id === app.id);
+        if (existing >= 0) {
+          state.vibeApps[existing] = app;
+        } else {
+          state.vibeApps.push(app);
+        }
+        renderVibeApps();
+      } else {
+        const existing = state.apps.findIndex(a => a.id === app.id);
+        if (existing >= 0) {
+          state.apps[existing] = app;
+        } else {
+          state.apps.push(app);
+        }
+        renderApps();
+      }
+
+      saveState();
+      updateSettings();
+      closeAppModal();
+    };
+
+    // 파일 입력 처리
+    document.getElementById('iconInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = event => {
+          document.getElementById('iconPreviewImg').innerHTML = `<img src="${event.target.result}">`;
+          document.getElementById('iconPreviewName').textContent = file.name;
+          document.getElementById('iconPreview').classList.add('show');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('htmlInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById('htmlPreviewName').textContent = file.name;
+        document.getElementById('htmlPreview').classList.add('show');
+      }
+    });
+
+    document.getElementById('photoFileInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = event => {
+          document.getElementById('photoPreviewImg').innerHTML = `<img src="${event.target.result}">`;
+          document.getElementById('photoPreviewName').textContent = file.name;
+          document.getElementById('photoPreview').classList.add('show');
+          state.userProfile.photoURL = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('iconRemoveBtn').addEventListener('click', () => {
+      document.getElementById('iconInput').value = '';
+      document.getElementById('iconPreview').classList.remove('show');
+    });
+
+    document.getElementById('htmlRemoveBtn').addEventListener('click', () => {
+      document.getElementById('htmlInput').value = '';
+      document.getElementById('htmlPreview').classList.remove('show');
+    });
+
+    document.getElementById('photoRemoveBtn').addEventListener('click', () => {
+      document.getElementById('photoFileInput').value = '';
+      document.getElementById('photoPreview').classList.remove('show');
+      state.userProfile.photoURL = null;
+    });
+
+    // 뷰 전환
+    const switchView = (viewName) => {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewName + 'View').classList.add('active');
+      state.currentView = viewName;
+      enableBGM();
+    };
+
+    // 단축 실행 업데이트
+    const updateShortcuts = () => {
+      const recentList = document.getElementById('recentAppsList');
+      const favoriteList = document.getElementById('favoriteAppsList');
+
+      recentList.innerHTML = '';
+      favoriteList.innerHTML = '';
+
+      state.recent.forEach(appId => {
+        const app = state.apps.find(a => a.id === appId);
+        if (app) {
+          const btn = document.createElement('button');
+          btn.className = 'quick-app-btn recent';
+          btn.innerHTML = `
+            <div class="quick-app-icon">${app.icon ? `<img src="${app.icon}">` : '📦'}</div>
+            <div class="quick-app-content">
+              <div class="quick-app-name">${app.name}</div>
+              <div class="quick-app-desc">${app.desc}</div>
+            </div>
+          `;
+          btn.addEventListener('click', () => runApp(app));
+          recentList.appendChild(btn);
+        }
+      });
+
+      state.apps.filter(a => a.favorite).forEach(app => {
+        const btn = document.createElement('button');
+        btn.className = 'quick-app-btn favorite';
+        btn.innerHTML = `
+          <div class="quick-app-icon">${app.icon ? `<img src="${app.icon}">` : '📦'}</div>
+          <div class="quick-app-content">
+            <div class="quick-app-name">${app.name}</div>
+            <div class="quick-app-desc">${app.desc}</div>
+          </div>
+        `;
+        btn.addEventListener('click', () => runApp(app));
+        favoriteList.appendChild(btn);
+      });
+
+      if (recentList.children.length === 0) {
+        recentList.innerHTML = '<div class="shortcut-empty">최근 앱이 없습니다</div>';
+      }
+      if (favoriteList.children.length === 0) {
+        favoriteList.innerHTML = '<div class="shortcut-empty">즐겨찾기가 없습니다</div>';
+      }
+    };
+
+    // 설정 업데이트
+    const updateSettings = () => {
+      document.getElementById('appTotal').textContent = state.apps.length;
+      document.getElementById('runtimeCount').textContent = state.vibeApps.length;
+    };
+
+    // 이벤트 리스너
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+      updateSettings();
+      document.getElementById('settingsModal').classList.add('open');
+    });
+
+    document.getElementById('closeSettings').addEventListener('click', () => {
+      document.getElementById('settingsModal').classList.remove('open');
+    });
+
+    document.getElementById('profileChip').addEventListener('click', () => {
+      if (state.currentUser) {
+        openProfileModal();
+      } else {
+        openAuthModal();
+      }
+    });
+
+    document.getElementById('openAuthFromSettings').addEventListener('click', () => {
+      document.getElementById('settingsModal').classList.remove('open');
+      openAuthModal();
+    });
+
+    document.getElementById('openProfileFromSettings').addEventListener('click', () => {
+      if (state.currentUser) {
+        document.getElementById('settingsModal').classList.remove('open');
+        openProfileModal();
+      }
+    });
+
+    document.getElementById('toLibraryBtn').addEventListener('click', () => {
+      switchView('library');
+    });
+
+    document.getElementById('toVibeLibraryBtn').addEventListener('click', () => {
+      switchView('vibe-library');
+      renderVibeApps();
+    });
+
+    document.getElementById('libraryBackBtn').addEventListener('click', () => {
+      switchView('home');
+    });
+
+    document.getElementById('vibeBackBtn').addEventListener('click', () => {
+      switchView('home');
+    });
+
+    document.getElementById('libraryAddBtn').addEventListener('click', () => {
+      openAppModal(false);
+    });
+
+    document.getElementById('vibeAddBtn').addEventListener('click', () => {
+      openAppModal(true);
+    });
+
+    document.getElementById('runtimeCloseBtn').addEventListener('click', () => {
+      switchView('home');
+    });
+
+    document.getElementById('librarySearchInput').addEventListener('input', (e) => {
+      renderApps(e.target.value);
+    });
+
+    document.getElementById('vibeSearchInput').addEventListener('input', (e) => {
+      renderVibeApps(e.target.value);
+    });
+
+    document.getElementById('closeAuth').addEventListener('click', closeAuthModal);
+    document.getElementById('closeProfile').addEventListener('click', closeProfileModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeAppModal);
+    document.getElementById('cancelBtn').addEventListener('click', closeAppModal);
+
+    document.getElementById('loginTabBtn').addEventListener('click', () => {
+      state.isSignupMode = false;
+      document.getElementById('loginTabBtn').classList.add('active');
+      document.getElementById('signupTabBtn').classList.remove('active');
+      document.getElementById('signupOnly').style.display = 'none';
+      document.getElementById('authSubmitBtn').textContent = '로그인';
+    });
+
+    document.getElementById('signupTabBtn').addEventListener('click', () => {
+      state.isSignupMode = true;
+      document.getElementById('signupTabBtn').classList.add('active');
+      document.getElementById('loginTabBtn').classList.remove('active');
+      document.getElementById('signupOnly').style.display = 'block';
+      document.getElementById('authSubmitBtn').textContent = '회원가입';
+    });
+
+    document.getElementById('authSubmitBtn').addEventListener('click', handleAuthSubmit);
+    document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleLogin);
+    document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+    document.getElementById('saveBtn').addEventListener('click', saveApp);
+
+    document.getElementById('exportData').addEventListener('click', () => {
+      const data = {
+        version: CURRENT_VERSION,
+        apps: state.apps,
+        vibeApps: state.vibeApps,
+        exportDate: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `vibe-launcher-backup-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importData').addEventListener('click', () => {
+      document.getElementById('importFile').click();
+    });
+
+    document.getElementById('importFile').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
       const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result ?? ''));
-      reader.onerror = () => reject(new Error('File read error'));
+      reader.onload = event => {
+        try {
+          const data = JSON.parse(event.target.result);
+          state.apps = data.apps || [];
+          state.vibeApps = data.vibeApps || [];
+          saveState();
+          renderApps();
+          renderVibeApps();
+          updateSettings();
+          alert('데이터를 성공적으로 가져왔습니다.');
+        } catch (e) {
+          alert('파일을 읽을 수 없습니다.');
+        }
+      };
       reader.readAsText(file);
     });
 
-    const readFileAsDataURL = (file) => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result ?? ''));
-      reader.onerror = () => reject(new Error('File read error'));
-      reader.readAsDataURL(file);
-    });
-
-    const ensureRuntimeStore = (appId) => {
-      if (!state.runtimeStores[appId]) state.runtimeStores[appId] = { localStorage: {}, sessionStorage: {} };
-      if (!state.runtimeStores[appId].localStorage) state.runtimeStores[appId].localStorage = {};
-      if (!state.runtimeStores[appId].sessionStorage) state.runtimeStores[appId].sessionStorage = {};
-      return state.runtimeStores[appId];
-    };
-
-    const updateRuntimeStore = (appId, kind, data) => {
-      if (!appId || !kind || !data) return;
-      const store = ensureRuntimeStore(appId);
-      store[kind] = deepClone(data);
-      persistLocalState();
-      if (state.currentUser) queueCloudSave();
-      updateRuntimeCount();
-    };
-
-    const buildRuntimeBootstrap = (appId) => {
-      const store = ensureRuntimeStore(appId);
-      return `
-<script>
-(() => {
-  const APP_ID = ${JSON.stringify(appId)};
-  const INITIAL = ${safeJson(store)};
-  const parentPost = (kind, data) => {
-    try {
-      parent.postMessage({ __launcher: true, type: 'runtime-storage', appId: APP_ID, kind, data }, '*');
-    } catch (_) {}
-  };
-  const createStorage = (kind) => {
-    const source = INITIAL[kind] && typeof INITIAL[kind] === 'object' ? INITIAL[kind] : {};
-    const data = new Map(Object.entries(source).map(([k, v]) => [String(k), String(v)]));
-    const dump = () => Object.fromEntries(data.entries());
-    const api = {
-      get length() { return data.size; },
-      key(index) { return Array.from(data.keys())[index] ?? null; },
-      getItem(key) { key = String(key); return data.has(key) ? data.get(key) : null; },
-      setItem(key, value) { data.set(String(key), String(value)); parentPost(kind, dump()); },
-      removeItem(key) { data.delete(String(key)); parentPost(kind, dump()); },
-      clear() { data.clear(); parentPost(kind, dump()); },
-      __dump: dump
-    };
-    return new Proxy(api, {
-      get(target, prop) {
-        if (prop in target) return target[prop];
-        if (typeof prop === 'string') return target.getItem(prop);
-        return target[prop];
-      },
-      set(target, prop, value) {
-        if (typeof prop === 'string' && !(prop in target)) { target.setItem(prop, value); return true; }
-        target[prop] = value; return true;
-      },
-      deleteProperty(target, prop) { if (typeof prop === 'string') target.removeItem(prop); return true; },
-      ownKeys() { return Array.from(data.keys()); },
-      getOwnPropertyDescriptor(target, prop) {
-        if (typeof prop === 'string' && data.has(prop)) {
-          return { enumerable: true, configurable: true, value: data.get(prop), writable: true };
-        }
-        return Object.getOwnPropertyDescriptor(target, prop) || { enumerable: false, configurable: true };
+    document.getElementById('clearData').addEventListener('click', () => {
+      if (confirm('모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+        state.apps = [];
+        state.vibeApps = [];
+        state.favorites = [];
+        state.recent = [];
+        saveState();
+        renderApps();
+        renderVibeApps();
+        updateSettings();
+        updateShortcuts();
+        alert('모든 데이터가 삭제되었습니다.');
       }
     });
-  };
-  const ls = createStorage('localStorage');
-  const ss = createStorage('sessionStorage');
-  try { Object.defineProperty(window, 'localStorage', { value: ls, configurable: true }); } catch (_) { window.localStorage = ls; }
-  try { Object.defineProperty(window, 'sessionStorage', { value: ss, configurable: true }); } catch (_) { window.sessionStorage = ss; }
-  window.addEventListener('beforeunload', () => {
-    parentPost('localStorage', ls.__dump());
-    parentPost('sessionStorage', ss.__dump());
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      parentPost('localStorage', ls.__dump());
-      parentPost('sessionStorage', ss.__dump());
-    }
-  });
-  parentPost('ready', { ok: true });
-})();
-<\/script>`;
-    };
 
-    const buildRuntimeHtml = (app) => {
-      const raw = String(app.htmlContent || '');
-      const bootstrap = buildRuntimeBootstrap(app.id);
-      const injectedBootstrap = bootstrap.replace(/<\/script>/gi, '<\\/script>');
-      if (/<\/head>/i.test(raw)) {
-        return raw.replace(/<\/head>/i, `${injectedBootstrap}</head>`);
-      }
-      if (/<head[^>]*>/i.test(raw)) {
-        return raw.replace(/<head[^>]*>/i, (m) => `${m}${injectedBootstrap}`);
-      }
-      return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">${injectedBootstrap}</head><body>${raw}</body></html>`;
-    };
-
-    const persistApp = async (appId) => {
-      if (!state.currentUser) return;
-      const app = state.apps.find(a => a.id === appId);
-      if (!app) return;
-      try {
-        await setDoc(doc(db, 'users', state.currentUser.uid, 'apps', app.id), {
-          ...app,
-          runtimeStore: ensureRuntimeStore(app.id),
-          updatedAt: serverTimestamp(),
-        }, { merge: true });
-      } catch (_) {}
-    };
-
-    let cloudSaveTimer = null;
-    const queueCloudSave = () => {
-      if (!state.currentUser) return;
-      state.cloudSyncPending = true;
-      clearTimeout(cloudSaveTimer);
-      cloudSaveTimer = setTimeout(async () => {
-        await saveCloudAll();
-        state.cloudSyncPending = false;
-        updateSyncLabels();
-      }, 650);
-      updateSyncLabels();
-    };
-
-    const saveCloudAll = async () => {
-      if (!state.currentUser) return;
-      try {
-        await setDoc(doc(db, 'users', state.currentUser.uid), {
-          email: state.currentUser.email || '',
-          displayName: state.profile.displayName || state.currentUser.displayName || '',
-          photoURL: state.profile.photoURL || state.currentUser.photoURL || '',
-          updatedAt: serverTimestamp(),
-          providerId: state.currentUser.providerData?.[0]?.providerId || 'password',
-        }, { merge: true });
-
-        const existingSnap = await getDocs(collection(db, 'users', state.currentUser.uid, 'apps'));
-        const existingIds = new Set(existingSnap.docs.map(d => d.id));
-        const currentIds = new Set(state.apps.map(app => app.id));
-
-        for (const app of state.apps) {
-          await setDoc(doc(db, 'users', state.currentUser.uid, 'apps', app.id), {
-            ...app,
-            runtimeStore: ensureRuntimeStore(app.id),
-            updatedAt: serverTimestamp(),
-          }, { merge: true });
-        }
-
-        for (const id of existingIds) {
-          if (!currentIds.has(id)) {
-            await deleteDoc(doc(db, 'users', state.currentUser.uid, 'apps', id));
-          }
-        }
-      } catch (_) {}
-    };
-
-    const loadCloudAll = async () => {
-      if (!state.currentUser) return;
-      try {
-        const userRef = doc(db, 'users', state.currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          const data = userSnap.data();
-          state.profile.displayName = data.displayName || state.currentUser.displayName || '';
-          state.profile.photoURL = data.photoURL || state.currentUser.photoURL || '';
-        } else {
-          state.profile.displayName = state.currentUser.displayName || '';
-          state.profile.photoURL = state.currentUser.photoURL || '';
-        }
-
-        const appsSnap = await getDocs(collection(db, 'users', state.currentUser.uid, 'apps'));
-        const loadedApps = [];
-        const loadedStores = {};
-        appsSnap.forEach((d) => {
-          const data = d.data() || {};
-          loadedApps.push({
-            id: data.id || d.id,
-            name: data.name || '무제 앱',
-            description: data.description || '',
-            date: data.date || '',
-            iconImage: data.iconImage || '',
-            htmlContent: data.htmlContent || '',
-            favorite: Boolean(data.favorite),
-            lastOpened: Number(data.lastOpened || 0),
-            timestamp: Number(data.timestamp || Date.now()),
-          });
-          loadedStores[d.id] = sanitizeRuntimeStores({ temp: data.runtimeStore || {} }).temp || { localStorage: {}, sessionStorage: {} };
-        });
-        if (loadedApps.length) state.apps = sanitizeApps(loadedApps);
-        state.runtimeStores = { ...state.runtimeStores, ...sanitizeRuntimeStores(loadedStores) };
-        persistLocalState();
-      } catch (err) {
-        console.error('Cloud load failed', err);
-      }
-    };
-
-    const updateProfileUI = () => {
-      const user = state.currentUser;
-      const hasUser = Boolean(user);
-      els.authStateLabel.textContent = hasUser ? '로그인됨' : '로그아웃';
-      els.profileChipName.textContent = hasUser ? (state.profile.displayName || user.displayName || user.email || '계정') : '로그인';
-      els.profileChipAvatar.textContent = hasUser ? (state.profile.photoURL || user.photoURL ? '' : '👤') : '👤';
-      if (hasUser && (state.profile.photoURL || user.photoURL)) {
-        const url = state.profile.photoURL || user.photoURL;
-        els.profileChipAvatar.innerHTML = `<img src="${url}" alt="" />`;
-      } else {
-        els.profileChipAvatar.textContent = '👤';
-      }
-      els.profileEmailText.textContent = hasUser ? (user.email || '-') : '-';
-      els.profileUidText.textContent = hasUser ? user.uid : '-';
-      els.displayNameInput.value = state.profile.displayName || user?.displayName || '';
-      const previewUrl = state.profilePhotoPreview || state.profile.photoURL || user?.photoURL || '';
-      if (previewUrl) {
-        els.photoPreviewImg.innerHTML = `<img src="${previewUrl}" alt="" />`;
-        els.photoPreviewName.textContent = state.profilePhotoFile?.name || '현재 이미지';
-        els.photoPreview.classList.add('show');
-      } else {
-        els.photoPreviewImg.innerHTML = '';
-        els.photoPreviewName.textContent = '';
-        els.photoPreview.classList.remove('show');
-      }
-      els.syncStateText.textContent = hasUser ? (state.cloudSyncPending ? '동기화 중' : '클라우드') : '로컬';
-    };
-
-    const updateRuntimeCount = () => {
-      els.runtimeCount.textContent = Object.keys(state.runtimeStores || {}).length;
-      els.appTotal.textContent = state.apps.length;
-    };
-
-    const renderHomeShortcuts = () => {
-      const recentApps = [...state.apps]
-        .filter(app => Number(app.lastOpened || 0) > 0)
-        .sort((a, b) => Number(b.lastOpened || 0) - Number(a.lastOpened || 0))
-        .slice(0, 3);
-      const favoriteApps = [...state.apps]
-        .filter(app => Boolean(app.favorite))
-        .sort((a, b) => Number(b.timestamp || 0) - Number(a.timestamp || 0))
-        .slice(0, 3);
-
-      const renderList = (apps, emptyText, className) => {
-        if (!apps.length) return `<p class="shortcut-empty">${escapeHtml(emptyText)}</p>`;
-        return apps.map(app => `
-          <button class="quick-app-btn ${className}" type="button" data-quick-launch="${app.id}" title="${escapeHtml(app.name)} 실행">
-            <span class="quick-app-icon">${app.iconImage ? `<img src="${app.iconImage}" alt="" />` : '📦'}</span>
-            <div class="quick-app-content">
-              <span class="quick-app-name">${escapeHtml(app.name)}</span>
-              <span class="quick-app-desc">${escapeHtml(app.description || '설명 없음')}</span>
-            </div>
-          </button>
-        `).join('');
-      };
-
-      els.recentAppsList.innerHTML = renderList(recentApps, '실행한 앱이 아직 없어요', 'recent');
-      els.favoriteAppsList.innerHTML = renderList(favoriteApps, '즐겨찾기 앱이 없어요', 'favorite');
-    };
-
-    const toggleFavorite = (appId) => {
-      const app = state.apps.find(a => a.id === appId);
-      if (!app) return;
-      app.favorite = !app.favorite;
-      app.timestamp = Date.now();
-      persistLocalState();
-      queueCloudSave();
-      renderLibrary();
-      renderHomeShortcuts();
-    };
-
-    let draggedElement = null;
-    let draggedId = null;
-    const enableDragAndDrop = () => {
-      const cards = els.appsGrid.querySelectorAll('[data-id]');
-      cards.forEach(card => {
-        card.draggable = true;
-        card.addEventListener('dragstart', (e) => {
-          if (e.target.closest('button')) { e.preventDefault(); return; }
-          draggedElement = card;
-          draggedId = card.getAttribute('data-id');
-          card.classList.add('dragging');
-          try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', draggedId); } catch (_) {}
-        });
-        card.addEventListener('dragend', () => {
-          draggedElement = null;
-          draggedId = null;
-          card.classList.remove('dragging');
-          cards.forEach(c => c.classList.remove('drag-over'));
-        });
-        card.addEventListener('dragover', (e) => {
-          e.preventDefault();
-          if (card === draggedElement) return;
-          card.classList.add('drag-over');
-        });
-        card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
-        card.addEventListener('drop', (e) => {
-          e.preventDefault();
-          if (!draggedId || draggedId === card.getAttribute('data-id')) return;
-          const draggedIndex = state.apps.findIndex(a => a.id === draggedId);
-          const targetIndex = state.apps.findIndex(a => a.id === card.getAttribute('data-id'));
-          if (draggedIndex !== -1 && targetIndex !== -1) {
-            const [draggedApp] = state.apps.splice(draggedIndex, 1);
-            state.apps.splice(targetIndex, 0, draggedApp);
-            persistLocalState();
-            queueCloudSave();
-            renderLibrary();
-            renderHomeShortcuts();
-          }
-          card.classList.remove('drag-over');
-        });
-      });
-    };
-
-    const renderLibrary = () => {
-      const query = state.searchQuery.trim().toLowerCase();
-      const filtered = query
-        ? state.apps.filter(app => (app.name + ' ' + (app.description || '')).toLowerCase().includes(query))
-        : state.apps;
-
-      if (!filtered.length) {
-        els.appsGrid.innerHTML = `
-          <div style="grid-column:1/-1;">
-            <div class="empty-state">
-              <span class="empty-badge">${state.apps.length ? '🔍' : '📦'}</span>
-              <h4>${state.apps.length ? '검색 결과가 없어요' : '아직 앱이 없어요'}</h4>
-              <p>${state.apps.length ? '검색어를 바꿔봐.' : '오른쪽 위 ＋ 버튼으로 첫 앱을 만들어봐.'}</p>
-            </div>
-          </div>`;
-        return;
-      }
-
-      els.appsGrid.innerHTML = filtered.map(app => `
-        <article class="app-card" data-id="${app.id}">
-          <div class="app-card-menu">
-            <button class="app-card-btn favorite ${app.favorite ? 'active' : ''}" type="button" data-favorite="${app.id}" title="즐겨찾기">
-              <svg viewBox="0 0 24 24"><path d="M12 17.2l-5.56 3.27 1.48-6.2L3 10.24l6.36-.53L12 4l2.64 5.71 6.36.53-4.92 4.03 1.48 6.2z" fill="currentColor"/></svg>
-            </button>
-            <button class="app-card-btn" type="button" data-edit="${app.id}" title="수정">
-              <svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z" fill="currentColor"/><path d="M13 6l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            </button>
-            <button class="app-card-btn delete" type="button" data-delete="${app.id}" title="삭제">
-              <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v6M14 10v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-          <div class="app-card-icon">${app.iconImage ? `<img src="${app.iconImage}" alt="" />` : '📦'}</div>
-          <div class="app-card-content">
-            <div class="app-card-name">${escapeHtml(app.name)}</div>
-            <div class="app-card-desc">${escapeHtml(app.description || '설명 없음')}</div>
-            <div class="app-card-date">${formatDate(app.date)}</div>
-          </div>
-        </article>
-      `).join('');
-
-      els.appsGrid.querySelectorAll('[data-id]').forEach(card => {
-        card.addEventListener('click', (e) => {
-          if (e.target.closest('[data-edit]') || e.target.closest('[data-delete]') || e.target.closest('[data-favorite]')) return;
-          launchApp(card.getAttribute('data-id'));
-        });
-      });
-      els.appsGrid.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(btn.getAttribute('data-edit')); }));
-      els.appsGrid.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); deleteApp(btn.getAttribute('data-delete')); }));
-      els.appsGrid.querySelectorAll('[data-favorite]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(btn.getAttribute('data-favorite')); }));
-      enableDragAndDrop();
-    };
-
-    const renderVibeLibrary = () => {
-      const query = state.vibeSearchQuery.trim().toLowerCase();
-      const items = DEFAULT_BUILTINS.filter(item => (item.title + ' ' + item.desc).toLowerCase().includes(query));
-      els.vibeAppsGrid.innerHTML = items.map(item => `
-        <article class="built-card" data-built="${item.id}">
-          <div class="built-icon">${item.icon}</div>
-          <div class="built-content">
-            <strong>${escapeHtml(item.title)}</strong>
-            <span>${escapeHtml(item.desc)}</span>
-          </div>
-        </article>
-      `).join('') || `
-        <div style="grid-column:1/-1;">
-          <div class="empty-state">
-            <span class="empty-badge">🔎</span>
-            <h4>검색 결과가 없어요</h4>
-            <p>다른 키워드로 찾아봐.</p>
-          </div>
-        </div>`;
-      els.vibeAppsGrid.querySelectorAll('[data-built]').forEach(card => card.addEventListener('click', () => handleBuiltInAction(card.getAttribute('data-built'))));
-    };
-
-    const setModalOpen = (el, open) => {
-      if (open) el.classList.add('open'); else el.classList.remove('open');
-    };
-
-    const openAddModal = () => {
-      state.editingId = null;
-      state.formData = { name: '', description: '', date: '', iconImage: '', htmlContent: '' };
-      els.modalTitle.textContent = '새 앱 추가';
-      els.nameInput.value = '';
-      els.descInput.value = '';
-      els.dateInput.value = '';
-      els.iconInput.value = '';
-      els.htmlInput.value = '';
-      els.iconPreview.style.display = 'none';
-      els.htmlPreview.style.display = 'none';
-      setError('');
-      setModalOpen(els.modalBackdrop, true);
-      els.nameInput.focus();
-    };
-
-    const openEditModal = (appId) => {
-      const app = state.apps.find(a => a.id === appId);
-      if (!app) return;
-      state.editingId = appId;
-      state.formData = { name: app.name || '', description: app.description || '', date: app.date || '', iconImage: app.iconImage || '', htmlContent: app.htmlContent || '' };
-      els.modalTitle.textContent = '앱 수정';
-      els.nameInput.value = state.formData.name;
-      els.descInput.value = state.formData.description;
-      els.dateInput.value = state.formData.date;
-      els.iconInput.value = '';
-      els.htmlInput.value = '';
-      if (state.formData.iconImage) {
-        els.iconPreviewImg.innerHTML = `<img src="${state.formData.iconImage}" alt="" />`;
-        els.iconPreviewName.textContent = '아이콘 설정됨';
-        els.iconPreview.style.display = 'flex';
-      } else els.iconPreview.style.display = 'none';
-      if (state.formData.htmlContent) {
-        els.htmlPreviewName.textContent = 'HTML 파일 설정됨';
-        els.htmlPreview.style.display = 'flex';
-      } else els.htmlPreview.style.display = 'none';
-      setError('');
-      setModalOpen(els.modalBackdrop, true);
-      els.nameInput.focus();
-    };
-
-    const hideModal = () => setModalOpen(els.modalBackdrop, false);
-    const hideAuthModal = () => setModalOpen(els.authModal, false);
-    const hideProfileModal = () => setModalOpen(els.profileModal, false);
-    const showAuthModal = () => { updateAuthTab(); setModalOpen(els.authModal, true); };
-    const showProfileModal = () => { updateProfileUI(); setModalOpen(els.profileModal, true); };
-
-    const saveApp = async () => {
-      try {
-        const name = els.nameInput.value.trim();
-        const desc = els.descInput.value.trim();
-        const date = els.dateInput.value.trim();
-        if (!name) { setError('앱 이름을 입력해.'); return; }
-        if (!state.formData.htmlContent) { setError('HTML 파일을 업로드해.'); return; }
-        const now = Date.now();
-        if (state.editingId) {
-          const app = state.apps.find(a => a.id === state.editingId);
-          if (!app) { setError('앱을 찾을 수 없어요.'); return; }
-          app.name = name;
-          app.description = desc;
-          app.date = date;
-          if (state.formData.iconImage) app.iconImage = state.formData.iconImage;
-          if (state.formData.htmlContent) app.htmlContent = state.formData.htmlContent;
-          app.timestamp = now;
-        } else {
-          state.apps.unshift({ id: uid(), name, description: desc, date, iconImage: state.formData.iconImage || '', htmlContent: state.formData.htmlContent, favorite: false, lastOpened: 0, timestamp: now });
-        }
-        persistLocalState();
-        renderLibrary();
-        renderHomeShortcuts();
-        updateRuntimeCount();
-        hideModal();
-        queueCloudSave();
-      } catch (err) {
-        console.error(err);
-        setError('앱 저장 중 오류가 발생했어.');
-      }
-    };
-
-    const deleteApp = async (appId) => {
-      const app = state.apps.find(a => a.id === appId);
-      if (!app) return;
-      if (!confirm(`"${app.name}" 앱을 정말 삭제할까?`)) return;
-      state.apps = state.apps.filter(a => a.id !== appId);
-      delete state.runtimeStores[appId];
-      persistLocalState();
-      renderLibrary();
-      renderHomeShortcuts();
-      updateRuntimeCount();
-      if (state.currentUser) {
-        try { await deleteDoc(doc(db, 'users', state.currentUser.uid, 'apps', appId)); } catch (_) {}
-      }
-    };
-
-    const launchApp = async (appId) => {
-      const app = state.apps.find(a => a.id === appId);
-      if (!app) return;
-      if (!app.htmlContent || !app.htmlContent.trim()) { alert('이 앱의 HTML 파일이 없어요.'); return; }
-      app.lastOpened = Date.now();
-      persistLocalState();
-      renderHomeShortcuts();
-      queueCloudSave();
-      state.runtimeAppId = appId;
-      els.runtimeTitle.textContent = app.name || '앱';
-      els.runtimeFrame.srcdoc = buildRuntimeHtml(app);
-      showView('runtime');
-    };
-
-    const handleBuiltInAction = (actionId) => {
-      switch (actionId) {
-        case 'vibe-account': showProfileModal(); break;
-        case 'vibe-sync': showAuthModal(); break;
-        case 'vibe-backup': openBackupTools(); break;
-        case 'vibe-inspector': openStorageInspector(); break;
-        case 'vibe-about': openAboutPanel(); break;
-      }
-    };
-
-    const openBackupTools = () => {
-      const json = JSON.stringify({ apps: state.apps, runtimeStores: state.runtimeStores, profile: state.profile }, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `launcher-vibe-backup-${Date.now()}.json`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1500);
-    };
-
-    const openStorageInspector = () => {
-      const details = Object.entries(state.runtimeStores).slice(0, 8).map(([id, store]) => {
-        const app = state.apps.find(a => a.id === id);
-        return `${app?.name || id}: LS ${Object.keys(store.localStorage || {}).length}, SS ${Object.keys(store.sessionStorage || {}).length}`;
-      }).join('\n') || '저장된 런타임 데이터가 없습니다.';
-      alert(details);
-    };
-
-    const openAboutPanel = () => {
-      alert(`Launcher VIBE\n버전 1.0\n앱 ${state.apps.length}개\n런타임 저장소 ${Object.keys(state.runtimeStores || {}).length}개`);
-    };
-
-    const updateAuthTab = () => {
-      const isLogin = state.activeAuthTab === 'login';
-      els.loginTabBtn.classList.toggle('active', isLogin);
-      els.signupTabBtn.classList.toggle('active', !isLogin);
-      els.authSubmitBtn.textContent = isLogin ? '로그인' : '회원가입';
-      els.authSubmitBtn.classList.toggle('signup-mode', !isLogin);
-
-      if (els.authHelpText) {
-        const hint = authUseHint();
-        els.authHelpText.textContent = hint
-          ? `${hint} 이메일/비밀번호 로그인은 언제나 사용할 수 있습니다.`
-          : '이 계정은 앱 목록, 즐겨찾기, 런타임 저장 데이터를 사용자별로 동기화합니다.';
-      }
-    };
-
-    const isMobileLoginTarget = () => {
-      const ua = navigator.userAgent || '';
-      return /Android|iPhone|iPad|iPod|Mobi/i.test(ua) || window.innerWidth < 780;
-    };
-
-    const setProfilePhotoPreview = async (file) => {
-      if (!file) {
-        state.profilePhotoFile = null;
-        state.profilePhotoPreview = '';
-        els.photoFileInput.value = '';
-        els.photoPreviewImg.innerHTML = '';
-        els.photoPreviewName.textContent = '';
-        els.photoPreview.classList.remove('show');
-        return;
-      }
-      const url = await readFileAsDataURL(file);
-      state.profilePhotoFile = file;
-      state.profilePhotoPreview = url;
-      els.photoPreviewImg.innerHTML = `<img src="${url}" alt="" />`;
-      els.photoPreviewName.textContent = file.name;
-      els.photoPreview.classList.add('show');
-    };
-
-    const doAuthSubmit = async () => {
-      const email = els.authEmail.value.trim();
-      const password = els.authPassword.value.trim();
-      if (!email || !password) { alert('이메일과 비밀번호를 입력해.'); return; }
-
-      try {
-        await setPersistence(auth, browserLocalPersistence);
-      } catch (persistErr) {
-        console.warn('Firebase persistence setup failed:', persistErr);
-      }
-
-      try {
-        if (state.activeAuthTab === 'login') {
-          await signInWithEmailAndPassword(auth, email, password);
-        } else {
-          await createUserWithEmailAndPassword(auth, email, password);
-        }
-        hideAuthModal();
-      } catch (e) {
-        const msg = String(e?.code || e?.message || '인증 실패');
-        if (msg.includes('auth/operation-not-allowed')) {
-          alert('Firebase 콘솔에서 이메일/비밀번호 로그인을 켜야 합니다.');
-          return;
-        }
-        if (msg.includes('auth/unauthorized-domain')) {
-          alert('이 주소는 Firebase 허용 도메인에 없어요. Netlify나 GitHub Pages 주소를 등록해야 합니다.');
-          return;
-        }
-        alert(e?.message || '인증 실패');
-      }
-    };
-
-    const doGoogleLogin = async () => {
-      try {
-        if (isInvalidLocalOrigin()) {
-          alert('Google 로그인은 Netlify, GitHub Pages 같은 https 주소에서만 동작합니다. 지금은 로컬 파일이라 로그인할 수 없어요.');
-          return;
-        }
-
-        hideAuthModal();
-
-        if (isMobileLoginTarget()) {
-          await signInWithRedirect(auth, googleProvider);
-          return;
-        }
-
+    // Auth 상태 변경 감시
+    onAuthStateChanged(auth, async (user) => {
+      await updateAuthState(user);
+      if (user) {
         try {
-          await signInWithPopup(auth, googleProvider);
-          hideAuthModal();
-        } catch (popupErr) {
-          console.warn('Popup login failed, falling back to redirect:', popupErr);
-          await signInWithRedirect(auth, googleProvider);
+          await setPersistence(auth, browserLocalPersistence);
+        } catch (e) {
+          console.log('Persistence 설정 실패:', e);
         }
-      } catch (e) {
-        console.error('Google login failed:', e);
-        alert(e?.message || 'Google 로그인 실패');
       }
-    };
+    });
 
-    const saveProfile = async () => {
-      if (!state.currentUser) { alert('로그인이 필요합니다.'); return; }
-      const displayName = els.displayNameInput.value.trim();
-      let photoURL = state.profile.photoURL || state.currentUser.photoURL || '';
-
-      try {
-        if (state.profilePhotoFile) {
-          const file = state.profilePhotoFile;
-          if (!file.type.startsWith('image/')) throw new Error('이미지 파일만 업로드할 수 있어.');
-          if (file.size > 3 * 1024 * 1024) throw new Error('프로필 이미지는 3MB 이하여야 해.');
-          const path = `profile-images/${state.currentUser.uid}/${Date.now()}-${file.name}`.replace(/[^a-zA-Z0-9_./-]/g, '_');
-          const fileRef = storageRef(storage, path);
-          await uploadBytes(fileRef, file);
-          photoURL = await getDownloadURL(fileRef);
-        }
-      } catch (err) {
-        alert(err?.message || '프로필 이미지 업로드에 실패했어.');
-        return;
-      }
-
-      state.profile.displayName = displayName;
-      state.profile.photoURL = photoURL;
-
-      try {
-        await updateProfile(state.currentUser, { displayName, photoURL: photoURL || null });
-      } catch (_) {}
-      try {
-        await setDoc(doc(db, 'users', state.currentUser.uid), {
-          displayName,
-          photoURL,
-          email: state.currentUser.email || '',
-          updatedAt: serverTimestamp(),
-        }, { merge: true });
-      } catch (_) {}
-      state.profilePhotoFile = null;
-      state.profilePhotoPreview = '';
-      persistLocalState();
-      updateProfileUI();
-      updateSyncLabels();
-      hideProfileModal();
-    };
-
-    const updateSyncLabels = () => {
-      const onlineText = state.currentUser ? (state.cloudSyncPending ? '동기화 중' : '클라우드 동기화됨') : '로컬 저장';
-      els.syncStateText.textContent = onlineText;
-      els.authStateLabel.textContent = state.currentUser ? '로그인됨' : '로그아웃';
-      els.appTotal.textContent = state.apps.length;
-      els.runtimeCount.textContent = Object.keys(state.runtimeStores || {}).length;
-    };
-
-    const exportData = () => {
-      const payload = {
-        version: CURRENT_VERSION,
-        apps: state.apps,
-        runtimeStores: state.runtimeStores,
-        profile: state.profile,
-        exportedAt: new Date().toISOString(),
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `launcher-vibe-${Date.now()}.json`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 1500);
-    };
-
-    const importData = async (file) => {
-      try {
-        const text = await readFileAsText(file);
-        const parsed = JSON.parse(text);
-        const apps = sanitizeApps(parsed.apps || parsed);
-        const runtimeStores = sanitizeRuntimeStores(parsed.runtimeStores || {});
-        if (!confirm('기존 앱을 이 파일 내용으로 바꿀까?')) return;
-        state.apps = apps;
-        state.runtimeStores = runtimeStores;
-        if (parsed.profile && typeof parsed.profile === 'object') state.profile = { ...state.profile, ...parsed.profile };
-        persistLocalState();
-        renderLibrary();
-        renderHomeShortcuts();
-        updateRuntimeCount();
-        updateProfileUI();
-        queueCloudSave();
-        alert('가져왔습니다.');
-      } catch (e) {
-        alert('파일을 읽을 수 없어요.');
-      }
-    };
-
-    const clearAllData = async () => {
-      if (!confirm('정말 모두 지울까요?')) return;
-      if (!confirm('정말정말요?')) return;
-      state.apps = [];
-      state.runtimeStores = {};
-      persistLocalState();
-      renderLibrary();
-      renderHomeShortcuts();
-      updateRuntimeCount();
-      if (state.currentUser) queueCloudSave();
-      alert('초기화했습니다.');
-    };
-
-    const applyInitialState = () => {
-      const local = loadLocalState();
-      if (local) {
-        state.apps = sanitizeApps(local.apps || []);
-        state.runtimeStores = sanitizeRuntimeStores(local.runtimeStores || {});
-        if (local.profile) state.profile = { ...state.profile, ...local.profile };
-      }
-      updateRuntimeCount();
-      renderLibrary();
-      renderVibeLibrary();
-      renderHomeShortcuts();
-      updateProfileUI();
-    };
-
-    const applyCloudAuthUser = async (user) => {
-      state.currentUser = user;
-      state.cloudReady = true;
-      state.profile.displayName = user.displayName || state.profile.displayName || '';
-      state.profile.photoURL = user.photoURL || state.profile.photoURL || '';
-      updateProfileUI();
-      updateSyncLabels();
-      await loadCloudAll();
-      renderLibrary();
-      renderHomeShortcuts();
-      updateProfileUI();
-      updateSyncLabels();
-      persistLocalState();
-    };
-
-    const attachEvents = () => {
-      els.settingsBtn.addEventListener('click', () => { updateRuntimeCount(); updateSyncLabels(); setModalOpen(els.settingsModal, true); });
-      els.profileChip.addEventListener('click', showProfileModal);
-      els.closeSettings.addEventListener('click', () => setModalOpen(els.settingsModal, false));
-      els.settingsModal.addEventListener('click', (e) => { if (e.target === els.settingsModal) setModalOpen(els.settingsModal, false); });
-      els.openAuthFromSettings.addEventListener('click', showAuthModal);
-      els.openProfileFromSettings.addEventListener('click', showProfileModal);
-      els.exportData.addEventListener('click', exportData);
-      els.importData.addEventListener('click', () => els.importFile.click());
-      els.importFile.addEventListener('change', (e) => { const file = e.target.files?.[0]; if (file) importData(file); e.target.value = ''; });
-      els.clearData.addEventListener('click', clearAllData);
-
-      els.toLibraryBtn.addEventListener('click', () => showView('library'));
-      els.toVibeLibraryBtn.addEventListener('click', () => showView('vibe'));
-      els.libraryBackBtn.addEventListener('click', () => showView('home'));
-      els.vibeBackBtn.addEventListener('click', () => showView('home'));
-      els.vibeRefreshBtn.addEventListener('click', () => renderVibeLibrary());
-      els.runtimeCloseBtn.addEventListener('click', () => showView('library'));
-      els.libraryAddBtn.addEventListener('click', openAddModal);
-      els.librarySearchInput.addEventListener('input', (e) => { state.searchQuery = e.target.value || ''; renderLibrary(); });
-      els.vibeSearchInput.addEventListener('input', (e) => { state.vibeSearchQuery = e.target.value || ''; renderVibeLibrary(); });
-
-      els.recentAppsList.addEventListener('click', (e) => {
-        const button = e.target.closest('[data-quick-launch]');
-        if (!button) return;
-        launchApp(button.getAttribute('data-quick-launch'));
-      });
-      els.favoriteAppsList.addEventListener('click', (e) => {
-        const button = e.target.closest('[data-quick-launch]');
-        if (!button) return;
-        launchApp(button.getAttribute('data-quick-launch'));
-      });
-
-      els.closeModalBtn.addEventListener('click', hideModal);
-      els.cancelBtn.addEventListener('click', hideModal);
-      els.saveBtn.addEventListener('click', saveApp);
-      els.modalBackdrop.addEventListener('click', (e) => { if (e.target === els.modalBackdrop) hideModal(); });
-
-      els.nameInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); els.descInput.focus(); }
-      });
-
-      els.iconInput.addEventListener('change', async () => {
-        const file = els.iconInput.files?.[0];
-        if (!file) return;
-        if (!file.type.startsWith('image/')) { setError('이미지 파일만 업로드할 수 있어.'); els.iconInput.value = ''; return; }
-        if (file.size > 2 * 1024 * 1024) { setError('이미지는 2MB 이하여야 해.'); els.iconInput.value = ''; return; }
-        try {
-          const data = await readFileAsDataURL(file);
-          state.formData.iconImage = data;
-          els.iconPreviewImg.innerHTML = `<img src="${data}" alt="" />`;
-          els.iconPreviewName.textContent = file.name;
-          els.iconPreview.style.display = 'flex';
-          setError('');
-        } catch {
-          setError('이미지를 읽는 중 오류가 발생했어.');
-          els.iconInput.value = ''; 
-        }
-      });
-      els.iconRemoveBtn.addEventListener('click', (e) => { e.preventDefault(); state.formData.iconImage = ''; els.iconInput.value = ''; els.iconPreview.style.display = 'none'; });
-
-      els.htmlInput.addEventListener('change', async () => {
-        const file = els.htmlInput.files?.[0];
-        if (!file) return;
-        if (!file.name.endsWith('.html') && !file.name.endsWith('.htm')) { setError('HTML 파일만 업로드할 수 있어.'); els.htmlInput.value = ''; return; }
-        if (file.size > 5 * 1024 * 1024) { setError('HTML 파일은 5MB 이하여야 해.'); els.htmlInput.value = ''; return; }
-        try {
-          const data = normalizeHtmlText(await readFileAsText(file));
-          state.formData.htmlContent = data;
-          els.htmlPreviewName.textContent = file.name;
-          els.htmlPreview.style.display = 'flex';
-          setError('');
-        } catch {
-          setError('HTML 파일을 읽는 중 오류가 발생했어.');
-          els.htmlInput.value = ''; 
-        }
-      });
-      els.htmlRemoveBtn.addEventListener('click', (e) => { e.preventDefault(); state.formData.htmlContent = ''; els.htmlInput.value = ''; els.htmlPreview.style.display = 'none'; });
-
-      els.loginTabBtn.addEventListener('click', () => { state.activeAuthTab = 'login'; updateAuthTab(); });
-      els.signupTabBtn.addEventListener('click', () => { state.activeAuthTab = 'signup'; updateAuthTab(); });
-      els.authSubmitBtn.addEventListener('click', doAuthSubmit);
-      els.googleLoginBtn.addEventListener('click', doGoogleLogin);
-      els.closeAuth.addEventListener('click', hideAuthModal);
-      els.authModal.addEventListener('click', (e) => { if (e.target === els.authModal) hideAuthModal(); });
-      els.openAuthFromSettings.addEventListener('click', showAuthModal);
-
-      els.closeProfile.addEventListener('click', hideProfileModal);
-      els.profileModal.addEventListener('click', (e) => { if (e.target === els.profileModal) hideProfileModal(); });
-      els.photoFileInput.addEventListener('change', async () => {
-        const file = els.photoFileInput.files?.[0];
-        if (!file) return;
-        if (!file.type.startsWith('image/')) {
-          alert('이미지 파일만 업로드할 수 있어.');
-          els.photoFileInput.value = '';
-          return;
-        }
-        if (file.size > 3 * 1024 * 1024) {
-          alert('프로필 이미지는 3MB 이하여야 해.');
-          els.photoFileInput.value = '';
-          return;
-        }
-        try {
-          await setProfilePhotoPreview(file);
-        } catch {
-          alert('이미지 미리보기를 불러오지 못했어.');
-          els.photoFileInput.value = '';
-        }
-      });
-      els.photoRemoveBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        state.profilePhotoFile = null;
-        state.profilePhotoPreview = '';
-        els.photoFileInput.value = '';
-        updateProfileUI();
-      });
-      els.saveProfileBtn.addEventListener('click', saveProfile);
-      els.logoutBtn.addEventListener('click', async () => { await signOut(auth); hideProfileModal(); });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          if (els.modalBackdrop.classList.contains('open')) hideModal();
-          else if (els.authModal.classList.contains('open')) hideAuthModal();
-          else if (els.profileModal.classList.contains('open')) hideProfileModal();
-          else if (state.currentView === 'runtime') showView('library');
-          else if (state.currentView === 'library' || state.currentView === 'vibe') showView('home');
-        }
-      });
-
-      window.addEventListener('message', (e) => {
-        const msg = e.data;
-        if (!msg || msg.__launcher !== true) return;
-        if (msg.type === 'runtime-storage') {
-          updateRuntimeStore(msg.appId, msg.kind, msg.data || {});
-        }
-      });
-
-      window.addEventListener('beforeunload', () => {
-        persistLocalState();
-      });
-      document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden') persistLocalState();
-      });
-    };
-
-    const initAuth = () => {
-      getRedirectResult(auth)
-        .then((result) => {
-          if (result?.user) {
-            state.currentUser = result.user;
-          }
-        })
-        .catch((err) => {
-          console.error('Firebase redirect result error:', err);
-        });
-
-      onAuthStateChanged(auth, async (user) => {
-        state.currentUser = user || null;
-        if (user) {
-          await applyCloudAuthUser(user);
-        } else {
-          state.cloudReady = false;
-          updateProfileUI();
-          updateSyncLabels();
-          if (els.authHelpText && authUseHint()) {
-            els.authHelpText.textContent = `${authUseHint()} 이메일/비밀번호 로그인은 사용할 수 있습니다.`;
-          }
-        }
-      });
-    };
-
-    const init = () => {
-      try {
-        applyInitialState();
-        updateAuthTab();
-        attachEvents();
-        initAuth();
-        renderLibrary();
-        renderVibeLibrary();
-        renderHomeShortcuts();
-        updateProfileUI();
-        updateSyncLabels();
-      } catch (err) {
-        console.error('Initialization error:', err);
-        applyInitialState();
-      }
-    };
-
-    init();
+    // 초기 로드
+    loadState();
+    loadProfileLocally();
+    updateProfileChip();
+    renderApps();
+    renderVibeApps();
+    updateShortcuts();
+    updateSettings();
+    enableBGM();
   </script>
 </body>
 </html>
