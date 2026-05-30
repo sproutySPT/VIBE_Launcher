@@ -1,0 +1,4351 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="true" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#070816" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <title>Launcher VIBE</title>
+  <style>
+    /* ===== DEFAULT THEME (Liquid Glass Dark) ===== */
+    :root {
+      --bg: #0a0a12;
+      --bg2: #0e0e1a;
+      --panel: rgba(18, 18, 28, 0.65);
+      --panel-2: rgba(22, 22, 36, 0.80);
+      --glass: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.13);
+      --glass-shine: rgba(255,255,255,0.18);
+      --line: rgba(255, 255, 255, 0.09);
+      --text: rgba(255, 255, 255, 0.97);
+      --text-muted: rgba(255, 255, 255, 0.68);
+      --text-muted2: rgba(255, 255, 255, 0.42);
+      --accent: #7c3aed;
+      --accent2: #5b21b6;
+      --accent-glow: rgba(124,58,237,0.35);
+      --accent-rgb: 124,58,237;
+      --shadow: 0 28px 100px rgba(0, 0, 0, 0.45);
+      --shadow-sm: 0 10px 32px rgba(0, 0, 0, 0.28);
+      --radius: 34px;
+      --radius-lg: 28px;
+      --radius-md: 20px;
+      --blur-lg: blur(18px);
+      --blur-md: blur(12px);
+      --blur-sm: blur(6px);
+      --transition: 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --card-height: 88px;
+      --max-content: 430px;
+      --community-accent: rgba(34,197,94,0.85);
+      --community-accent2: rgba(16,185,129,0.6);
+    }
+
+    /* ===== SIMPLE WHITE THEME ===== */
+    body.theme-white {
+      --bg: #f7f8fb;
+      --bg2: #ffffff;
+      --panel: rgba(255, 255, 255, 0.80);
+      --panel-2: rgba(255, 255, 255, 0.92);
+      --glass: rgba(255,255,255,0.72);
+      --glass-border: rgba(15, 23, 42, 0.10);
+      --glass-shine: rgba(255,255,255,0.95);
+      --line: rgba(15, 23, 42, 0.08);
+      --text: rgba(17, 24, 39, 0.96);
+      --text-muted: rgba(55, 65, 81, 0.76);
+      --text-muted2: rgba(107, 114, 128, 0.62);
+      --accent: #2563eb;
+      --accent2: #1d4ed8;
+      --accent-glow: rgba(37, 99, 235, 0.18);
+      --accent-rgb: 37,99,235;
+      --shadow: 0 22px 60px rgba(15, 23, 42, 0.10);
+      --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+      --community-accent: rgba(37,99,235,0.92);
+      --community-accent2: rgba(29,78,216,0.78);
+    }
+    body.theme-white {
+      background:
+        radial-gradient(ellipse at 18% 10%, rgba(37,99,235,0.09), transparent 36%),
+        radial-gradient(ellipse at 82% 8%, rgba(14,165,233,0.08), transparent 28%),
+        radial-gradient(ellipse at 50% 95%, rgba(148,163,184,0.10), transparent 32%),
+        var(--bg) !important;
+    }
+    body.theme-white::before {
+      opacity: 0.10;
+      background-image:
+        linear-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.05) 1px, transparent 1px) !important;
+    }
+    body.theme-white .brand-large h1 {
+      background: linear-gradient(135deg, #111827, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    body.theme-white .modal-panel,
+    body.theme-white .library-header,
+    body.theme-white .detail-header,
+    body.theme-white .runtime-header {
+      background: rgba(255,255,255,0.88);
+    }
+    body.theme-white .app-card,
+    body.theme-white .quick-app,
+    body.theme-white .profile-chip,
+    body.theme-white .settings-btn,
+    body.theme-white .library-btn,
+    body.theme-white .lib-back-btn,
+    body.theme-white .lib-add-btn,
+    body.theme-white .community-tab,
+    body.theme-white .btn-secondary,
+    body.theme-white .form-input {
+      background: rgba(255,255,255,0.78);
+    }
+    body.theme-white .library-btn {
+      background: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(255,255,255,0.86)) !important;
+    }
+    body.theme-white .community-tab.active {
+      background: linear-gradient(135deg, rgba(37,99,235,0.92), rgba(29,78,216,0.78)) !important;
+    }
+    body.theme-white .btn-primary {
+      background: linear-gradient(135deg, rgba(37,99,235,0.94), rgba(29,78,216,0.80));
+      box-shadow: 0 10px 28px rgba(37,99,235,0.18), inset 0 1px 0 rgba(255,255,255,0.28);
+    }
+    body.theme-white .community-feed-card,
+    body.theme-white .detail-comment-bubble,
+    body.theme-white .detail-app-card {
+      background: rgba(255,255,255,0.72) !important;
+      border-color: rgba(15,23,42,0.08) !important;
+    }
+    body.theme-white .community-guest-banner {
+      background: rgba(37,99,235,0.06);
+      border-color: rgba(37,99,235,0.12);
+    }
+    body.theme-white .home-community-btn {
+      background: rgba(255,255,255,0.78);
+      border-color: rgba(15,23,42,0.10);
+    }
+
+    /* ===== PLAYSTATION THEME ===== */
+    body.theme-ps {
+      --bg: #00070f;
+      --bg2: #000d1a;
+      --panel: rgba(0, 16, 36, 0.72);
+      --panel-2: rgba(0, 20, 42, 0.88);
+      --glass: rgba(0, 120, 255, 0.07);
+      --glass-border: rgba(0, 150, 255, 0.22);
+      --glass-shine: rgba(100, 200, 255, 0.18);
+      --line: rgba(0, 150, 255, 0.12);
+      --text: rgba(220, 240, 255, 0.97);
+      --text-muted: rgba(160, 200, 255, 0.72);
+      --text-muted2: rgba(100, 160, 220, 0.50);
+      --accent: #0072ff;
+      --accent2: #0050cc;
+      --accent-glow: rgba(0, 114, 255, 0.42);
+      --accent-rgb: 0,114,255;
+      --shadow: 0 28px 80px rgba(0,10,40,0.55);
+      --shadow-sm: 0 10px 28px rgba(0,10,40,0.38);
+      --community-accent: rgba(0, 195, 255, 0.9);
+      --community-accent2: rgba(0, 140, 220, 0.7);
+    }
+    body.theme-ps { background:
+      radial-gradient(ellipse at 20% 10%, rgba(0,114,255,0.30), transparent 45%),
+      radial-gradient(ellipse at 80% 5%, rgba(0,200,255,0.15), transparent 35%),
+      radial-gradient(ellipse at 50% 95%, rgba(0,60,200,0.18), transparent 40%),
+      var(--bg) !important; }
+    body.theme-ps::before {
+      background-image:
+        linear-gradient(rgba(0,114,255,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,114,255,0.07) 1px, transparent 1px) !important;
+    }
+    body.theme-ps .ps-symbol {
+      display: inline-block !important;
+    }
+
+    /* ===== SPROUTY THEME ===== */
+    body.theme-sprouty {
+      font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif !important;
+      --bg: #f5f0e8;
+      --bg2: #ede8dd;
+      --panel: rgba(255, 250, 240, 0.72);
+      --panel-2: rgba(255, 248, 235, 0.88);
+      --glass: rgba(255,255,255,0.55);
+      --glass-border: rgba(160,200,100,0.35);
+      --glass-shine: rgba(255,255,255,0.80);
+      --line: rgba(140, 180, 80, 0.22);
+      --text: rgba(50, 40, 28, 0.95);
+      --text-muted: rgba(80, 65, 48, 0.72);
+      --text-muted2: rgba(100, 85, 65, 0.52);
+      --accent: #5c9e2e;
+      --accent2: #3d7318;
+      --accent-glow: rgba(92,158,46,0.28);
+      --accent-rgb: 92,158,46;
+      --shadow: 0 20px 60px rgba(80,60,20,0.18);
+      --shadow-sm: 0 8px 24px rgba(80,60,20,0.12);
+      --community-accent: rgba(92,158,46,0.9);
+      --community-accent2: rgba(60,120,20,0.7);
+    }
+    body.theme-sprouty { background:
+      radial-gradient(ellipse at 20% 10%, rgba(92,158,46,0.15), transparent 40%),
+      radial-gradient(ellipse at 80% 5%, rgba(255,220,100,0.10), transparent 35%),
+      radial-gradient(ellipse at 50% 95%, rgba(92,158,46,0.08), transparent 40%),
+      var(--bg) !important; }
+    body.theme-sprouty::before {
+      background-image:
+        radial-gradient(circle, rgba(92,158,46,0.12) 1px, transparent 1px) !important;
+      background-size: 26px 26px !important;
+      opacity: 1 !important;
+    }
+    body.theme-sprouty .sprouty-deco {
+      display: block !important;
+    }
+
+    /* ===== LIQUID GLASS BASE ===== */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      font-weight: 500;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(var(--accent-rgb),0.22), transparent 40%),
+        radial-gradient(ellipse at 85% 8%, rgba(var(--accent-rgb),0.12), transparent 32%),
+        radial-gradient(ellipse at 50% 95%, rgba(var(--accent-rgb),0.10), transparent 35%),
+        var(--bg);
+      background-attachment: fixed;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+      -webkit-touch-callout: none;
+      text-rendering: optimizeLegibility;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.18;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+      background-size: 54px 54px;
+      z-index: 0;
+    }
+
+
+
+    button, input, textarea, select { font: inherit; }
+    img { display: block; }
+
+    .view {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .view.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .home, .library, .community, .runtime { overflow: hidden; }
+    .home {
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 18px 16px 16px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .topbar {
+      width: 100%;
+      max-width: var(--max-content);
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .profile-chip {
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      border-radius: 999px;
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      box-shadow: var(--shadow-sm), inset 0 1px 0 var(--glass-shine);
+      cursor: pointer;
+      min-height: 40px;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .profile-chip:active { transform: scale(0.97); }
+
+    .profile-chip img, .profile-chip .profile-chip-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: rgba(255,255,255,0.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+
+    .profile-chip span { font-size: 12px; font-weight: 650; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .settings-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      background: var(--glass);
+      color: var(--text);
+      font-size: 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform var(--transition), box-shadow var(--transition);
+      box-shadow: var(--shadow-sm), inset 0 1px 0 var(--glass-shine);
+    }
+    .settings-btn:hover { transform: scale(1.08) rotate(18deg); box-shadow: 0 12px 36px var(--accent-glow), inset 0 1px 0 var(--glass-shine); }
+
+    .home-content {
+      width: 100%;
+      max-width: var(--max-content);
+      margin: 0 auto;
+      text-align: center;
+      animation: slideUp 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand-large { margin: 4px 0 14px; }
+    .brand-large small {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted2);
+      margin-bottom: 6px;
+    }
+    .brand-large h1 {
+      margin: 0;
+      font-size: 36px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(200,200,255,0.78));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .brand-desc {
+      display: none;
+    }
+
+    .cta-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .library-btn {
+      position: relative;
+      width: 100%;
+      max-width: 310px;
+      aspect-ratio: 2.2;
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 20px;
+      color: var(--text);
+      background: linear-gradient(135deg, rgba(var(--accent-rgb),0.28) 0%, var(--glass) 100%);
+      box-shadow: 0 18px 50px var(--accent-glow), inset 0 1px 0 var(--glass-shine);
+      transition: transform var(--transition), box-shadow var(--transition);
+      overflow: hidden;
+    }
+    .library-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 55%);
+      border-radius: inherit;
+      pointer-events: none;
+    }
+    .library-btn:active { transform: scale(0.97); }
+
+    .library-btn-icon { font-size: 36px; }
+    .library-btn-text { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+    .library-btn-sub { font-size: 11px; color: var(--text-muted); }
+
+    .home-shortcuts {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .shortcut-column {
+      display: grid;
+      gap: 8px;
+    }
+
+    .shortcut-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted2);
+      margin: 0 0 5px;
+    }
+
+    .shortcut-list {
+      display: grid;
+      gap: 6px;
+    }
+
+    .quick-app {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform var(--transition), box-shadow var(--transition);
+      box-shadow: inset 0 1px 0 var(--glass-shine);
+    }
+    .quick-app:active { transform: scale(0.97); box-shadow: inset 0 1px 0 var(--glass-shine), 0 4px 16px var(--accent-glow); }
+
+    .quick-app-icon { font-size: 28px; flex: 0 0 auto; }
+    .quick-app-content { min-width: 0; flex: 1; text-align: left; }
+    .quick-app-name { font-size: 13px; font-weight: 750; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quick-app-desc { font-size: 11px; color: var(--text-muted2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .library-header {
+      flex: 0 0 auto;
+      padding: 12px 16px;
+      background: var(--panel);
+      backdrop-filter: var(--blur-lg);
+      -webkit-backdrop-filter: var(--blur-lg);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .title-row h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      flex: 1;
+    }
+
+    .lib-back-btn, .lib-add-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      background: var(--glass);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: transform var(--transition), box-shadow var(--transition);
+      box-shadow: inset 0 1px 0 var(--glass-shine);
+    }
+    .lib-back-btn:active, .lib-add-btn:active { transform: scale(0.94); box-shadow: inset 0 1px 0 var(--glass-shine), 0 4px 12px var(--accent-glow); }
+
+    .lib-search {
+      margin-bottom: 0;
+    }
+
+    .lib-search input {
+      width: 100%;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text);
+      font-size: 14px;
+    }
+    .lib-search input::placeholder { color: var(--text-muted2); }
+    .lib-search input:focus { outline: none; border-color: rgba(var(--accent-rgb),0.5); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.12), inset 0 1px 0 var(--glass-shine); }
+
+    .library, .community {
+      flex-direction: column;
+    }
+
+    .content-scroll {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 0;
+    }
+
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      padding: 12px 16px 16px;
+      max-width: var(--max-content);
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .app-card {
+      aspect-ratio: 1;
+      padding: 10px;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      box-shadow: var(--shadow-sm), inset 0 1px 0 var(--glass-shine);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      gap: 8px;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .app-card:active { transform: scale(0.97); box-shadow: 0 4px 16px var(--accent-glow), inset 0 1px 0 var(--glass-shine); }
+    .app-card.dragging { opacity: 0.5; }
+    .app-card.drag-over { border-color: rgba(var(--accent-rgb),0.55); box-shadow: 0 0 0 2px rgba(var(--accent-rgb),0.25), inset 0 1px 0 var(--glass-shine); }
+
+    .app-card-menu {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      display: none;
+      gap: 4px;
+      z-index: 3;
+    }
+    .app-card.show-actions .app-card-menu { display: flex; }
+    .app-card.pin-active { box-shadow: 0 0 0 2px rgba(var(--accent-rgb),0.5), var(--shadow-sm), inset 0 1px 0 var(--glass-shine); }
+    .app-card.pin-active::after {
+      content: '고정됨';
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(var(--accent-rgb),0.22);
+      border: 1px solid rgba(var(--accent-rgb),0.28);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 800;
+      z-index: 2;
+      backdrop-filter: blur(12px);
+    }
+
+    .app-card-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .app-card-btn:active { transform: scale(0.92); }
+    .app-card-btn.delete { color: rgba(255, 100, 100, 0.8); }
+    .app-card-btn.favorite.active { color: rgba(255, 200, 100, 1); }
+
+    .app-card-btn svg { width: 16px; height: 16px; }
+
+    .app-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+
+    .app-card-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+    .app-card-content {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .app-card-name {
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-card-desc {
+      font-size: 10px;
+      color: var(--text-muted2);
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .app-card-date {
+      font-size: 9px;
+      color: var(--text-muted2);
+      margin-top: 2px;
+    }
+
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      display: grid;
+      gap: 10px;
+      grid-column: 1/-1;
+    }
+
+    .empty-badge { font-size: 48px; }
+    .empty-state h4 { margin: 0; font-size: 16px; font-weight: 900; }
+    .empty-state p { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    .mini-grid { display: grid; gap: 0; }
+
+    .community-board-list { display: grid; gap: 0; }
+    .community-board-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      transition: background var(--transition);
+      display: grid;
+      gap: 8px;
+    }
+    .community-board-item:active { background: rgba(255,255,255,0.04); }
+
+    .community-board-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      line-height: 1.4;
+      word-break: break-word;
+      margin: 0;
+    }
+
+    .community-board-meta {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--text-muted2);
+    }
+
+    .community-board-author {
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .community-board-time {
+      font-size: 11px;
+    }
+
+    .community-board-stats {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--text-muted2);
+    }
+
+    .community-feed-card {
+      padding: 14px 16px 16px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .community-feed-card:active { background: rgba(255,255,255,0.04); }
+    .community-feed-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .community-feed-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .community-feed-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .community-feed-meta { min-width: 0; flex: 1; display: grid; gap: 2px; }
+    .community-feed-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .community-feed-author { font-size: 13px; font-weight: 800; color: var(--text); }
+    .community-feed-status { font-size: 11px; color: rgba(34, 197, 94, 0.8); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .community-feed-time { font-size: 11px; color: var(--text-muted2); }
+    .community-feed-title {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      line-height: 1.45;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .community-feed-title button {
+      all: unset;
+      cursor: pointer;
+      display: inline;
+    }
+    .community-feed-preview {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-muted);
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .community-feed-app {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      width: fit-content;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .community-feed-app-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.1);
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .community-feed-app-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* === Community: tabs in header === */
+    .community-tabs {
+      display: flex;
+      gap: 6px;
+      padding: 0 16px 8px;
+      background: transparent;
+    }
+    .community-tab {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), transform var(--transition);
+      box-shadow: inset 0 1px 0 var(--glass-shine);
+    }
+    .community-tab:active { transform: scale(0.97); }
+    .community-tab.active {
+      background: linear-gradient(135deg, var(--community-accent), var(--community-accent2));
+      color: rgba(240, 255, 245, 0.98);
+      border-color: var(--community-accent);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.22), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    /* === Community: instagram-like action row on cards === */
+    .community-feed-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-top: 4px;
+    }
+    .community-feed-action {
+      all: unset;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      transition: transform var(--transition);
+    }
+    .community-feed-action:active { transform: scale(0.93); }
+    .community-feed-action.liked { color: rgba(255, 99, 132, 0.95); }
+    .community-feed-action .ico { font-size: 18px; line-height: 1; }
+
+    /* === Composer: author preview (insta-like) === */
+    .compose-author-preview {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      margin-bottom: 4px;
+    }
+    .compose-author-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: rgba(255,255,255,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .compose-author-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .compose-author-meta { min-width: 0; display: grid; gap: 2px; flex: 1; }
+    .compose-author-name { font-size: 14px; font-weight: 800; color: var(--text); }
+    .compose-author-status {
+      font-size: 12px;
+      color: rgba(34, 197, 94, 0.85);
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: rgba(0,0,0,0.38);
+      backdrop-filter: blur(24px) saturate(1.5);
+      -webkit-backdrop-filter: blur(24px) saturate(1.5);
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-panel {
+      width: 100%;
+      max-height: 88vh;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: var(--panel-2);
+      backdrop-filter: var(--blur-lg);
+      -webkit-backdrop-filter: var(--blur-lg);
+      border: 1px solid var(--glass-border);
+      border-bottom: none;
+      box-shadow: var(--shadow), inset 0 1px 0 var(--glass-shine);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .modal-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      flex: 1;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition);
+    }
+    .modal-close:active { background: rgba(255,255,255,0.2); }
+
+    .modal-content {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      color: var(--text-muted);
+    }
+
+    .form-input {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text);
+      font-size: 14px;
+    }
+    .form-input:focus { outline: none; border-color: rgba(var(--accent-rgb),0.5); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.12), inset 0 1px 0 var(--glass-shine); }
+
+    .form-input::placeholder { color: var(--text-muted2); }
+
+    .btn {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 13px;
+      transition: transform var(--transition), background var(--transition);
+    }
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--community-accent), var(--community-accent2));
+      color: rgba(240, 255, 245, 0.98);
+      box-shadow: 0 10px 28px rgba(34, 197, 94, 0.22), inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+
+    .btn-secondary {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .auth-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .error-msg {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(200, 50, 50, 0.2);
+      border: 1px solid rgba(200, 50, 50, 0.3);
+      color: rgba(255, 150, 150, 0.9);
+      font-size: 12px;
+      display: none;
+    }
+
+    .error-msg:not(:empty) { display: block; }
+
+    .muted-note {
+      margin: 0;
+      font-size: 12px;
+      color: var(--text-muted2);
+      line-height: 1.5;
+    }
+
+    .settings-section {
+      display: grid;
+      gap: 12px;
+    }
+
+    .settings-section h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .settings-section p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .community-composer {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .community-composer .form-group { gap: 6px; }
+
+    .community-composer textarea {
+      resize: vertical;
+      min-height: 80px;
+      max-height: 200px;
+    }
+
+    .community-post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 6px 0;
+    }
+
+    .community-post-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .community-detail-view {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      background: var(--panel);
+      backdrop-filter: var(--blur-lg);
+      -webkit-backdrop-filter: var(--blur-lg);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .community-detail-view.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .detail-header {
+      flex: 0 0 auto;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-2);
+      backdrop-filter: var(--blur-md);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .detail-header button {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .detail-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 900;
+      flex: 1;
+    }
+
+    .detail-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: var(--max-content);
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .detail-post-header {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .detail-author-info {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .detail-author-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .detail-author-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-author-meta {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .detail-author-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    .detail-author-status {
+      font-size: 12px;
+      color: rgba(34, 197, 94, 0.8);
+      font-weight: 700;
+    }
+
+    .detail-post-time {
+      font-size: 11px;
+      color: var(--text-muted2);
+    }
+
+    .detail-post-title {
+      padding: 0 16px;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin: 8px 0 0;
+    }
+
+    .detail-post-content {
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .detail-app-section {
+      padding: 16px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .detail-app-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted2);
+      margin-bottom: 8px;
+    }
+
+    .detail-app-card {
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      gap: 12px;
+    }
+
+    .detail-app-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .detail-app-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-app-meta {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .detail-app-name {
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .detail-app-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .detail-actions {
+      padding: 12px 16px;
+      display: flex;
+      gap: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .detail-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 750;
+      font-size: 12px;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .detail-action-btn.active {
+      border-color: rgba(34, 197, 94, 0.42);
+      background: rgba(34, 197, 94, 0.14);
+    }
+
+    .detail-comments {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-comment-form {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .detail-comment-form input {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .detail-comment-form input::placeholder { color: var(--text-muted2); }
+
+    .detail-comment-form button {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.2);
+      color: rgba(34, 197, 94, 0.9);
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .detail-comment {
+      display: flex;
+      gap: 10px;
+    }
+
+    .detail-comment-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      overflow: hidden;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .detail-comment-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .detail-comment-bubble {
+      flex: 1;
+      min-width: 0;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    .detail-comment-bubble strong { color: var(--text); }
+
+    .detail-comment-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 2px;
+      font-size: 10px;
+      color: var(--text-muted2);
+    }
+
+    .detail-comment-empty {
+      padding: 24px 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted2);
+    }
+
+    .runtime-header {
+      flex: 0 0 auto;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      backdrop-filter: var(--blur-lg);
+      -webkit-backdrop-filter: var(--blur-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .runtime-header h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .runtime-close {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .runtime-content {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .runtime-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .profile-upload {
+      display: grid;
+      gap: 10px;
+    }
+
+    .profile-photo-preview {
+      width: 92px;
+      height: 92px;
+      border-radius: 26px;
+      overflow: hidden;
+      border: 1px solid rgba(110,231,183,0.18);
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .profile-photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-upload-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .profile-upload-actions .btn-secondary { flex: 0 0 auto; }
+
+    .profile-status-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(110,231,183,0.18);
+      background: rgba(16,185,129,0.10);
+      color: rgba(236,253,245,0.95);
+      font-size: 12px;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      padding: 10px 12px;
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      background: var(--glass);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 12px;
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+      box-shadow: inset 0 1px 0 var(--glass-shine);
+    }
+
+    .tab-btn.active {
+      border-color: rgba(var(--accent-rgb),0.42);
+      background: rgba(var(--accent-rgb),0.18);
+      color: var(--text);
+      box-shadow: 0 4px 14px var(--accent-glow), inset 0 1px 0 var(--glass-shine);
+    }
+
+    .account-card {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .account-card h4 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .account-card p {
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: var(--text);
+    }
+
+    .auth-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: grid;
+    }
+
+    .file-input-label {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px dashed rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .file-input-label:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); }
+
+    .file-input-label input {
+      display: none;
+    }
+
+    .icon-preview {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: none;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .icon-preview-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .icon-preview-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .icon-preview-text {
+      flex: 1;
+      font-size: 12px;
+      color: var(--text-muted);
+      word-break: break-word;
+    }
+
+    .btn-inline {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(200, 50, 50, 0.2);
+      color: rgba(255, 150, 150, 0.9);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 11px;
+      flex: 0 0 auto;
+    }
+
+
+
+    @media (orientation: landscape) and (max-height: 500px) {
+      .home { padding-top: 10px; }
+      .home-content { max-width: 100%; }
+      .brand-large h1 { font-size: 34px; }
+    }
+
+    @media (max-height: 600px) {
+      .modal-panel { max-height: 100vh; border-radius: 28px 28px 0 0; }
+    }
+
+    @media (min-width: 900px) {
+      .modal-panel {
+        width: 100vw;
+        height: 100vh;
+      }
+    }
+
+
+    /* Sprouty extra polish */
+    body.theme-sprouty .app-card {
+      border-radius: 28px !important;
+    }
+    body.theme-sprouty .lib-back-btn,
+    body.theme-sprouty .lib-add-btn {
+      border-radius: 50% !important;
+      border-color: rgba(92,158,46,0.35) !important;
+      background: rgba(200,230,160,0.45) !important;
+    }
+    body.theme-sprouty .community-tab {
+      border-radius: 999px !important;
+    }
+    body.theme-sprouty .profile-chip {
+      background: rgba(220,240,180,0.5) !important;
+      border-color: rgba(92,158,46,0.35) !important;
+    }
+    body.theme-sprouty .settings-btn {
+      background: rgba(200,230,160,0.45) !important;
+      border-color: rgba(92,158,46,0.35) !important;
+    }
+    body.theme-sprouty .quick-app {
+      border-radius: 20px !important;
+      background: rgba(230,245,210,0.60) !important;
+      border-color: rgba(92,158,46,0.22) !important;
+    }
+    body.theme-sprouty .home-community-btn {
+      background: rgba(200,230,160,0.45) !important;
+      border-color: rgba(92,158,46,0.35) !important;
+    }
+    body.theme-sprouty .brand-desc {
+      color: rgba(60,90,30,0.75) !important;
+    }
+    body.theme-sprouty .shortcut-title {
+      color: rgba(70,100,35,0.65) !important;
+    }
+    body.theme-sprouty .empty-badge { filter: saturate(0.5); }
+    body.theme-sprouty .community-feed-card {
+      background: rgba(240,248,225,0.55) !important;
+    }
+    body.theme-sprouty .detail-comment-bubble {
+      background: rgba(230,245,210,0.6) !important;
+      border-color: rgba(92,158,46,0.2) !important;
+    }
+
+
+    /* ===== GUEST BANNER ===== */
+    .community-guest-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(var(--accent-rgb), 0.08);
+      border-bottom: 1px solid rgba(var(--accent-rgb), 0.15);
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .community-guest-login-btn {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(var(--accent-rgb), 1);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      white-space: nowrap;
+    }
+    body.theme-sprouty .community-guest-banner {
+      background: rgba(92,158,46,0.08);
+      border-color: rgba(92,158,46,0.2);
+    }
+    body.theme-ps .community-guest-banner {
+      background: rgba(0,114,255,0.08);
+      border-color: rgba(0,150,255,0.18);
+    }
+
+
+    /* community spinner */
+    .community-spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--line);
+      border-top-color: rgba(var(--accent-rgb),0.7);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .detail-delete-btn {
+      color: rgba(255,80,80,0.8) !important;
+      border-color: rgba(255,80,80,0.2) !important;
+    }
+    .detail-delete-btn:hover { background: rgba(255,80,80,0.1) !important; }
+
+    /* ===== THEME SELECTOR ===== */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .theme-card {
+      border-radius: 18px;
+      border: 2px solid var(--glass-border);
+      background: var(--glass);
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      position: relative;
+    }
+    .theme-card:active { transform: scale(0.96); }
+    .theme-card.selected {
+      border-color: rgba(var(--accent-rgb),0.7);
+      box-shadow: 0 0 0 2px rgba(var(--accent-rgb),0.25), 0 8px 24px var(--accent-glow);
+    }
+    .theme-card-preview {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .theme-card-preview.preview-dark {
+      background: radial-gradient(ellipse at 30% 30%, rgba(124,58,237,0.35), transparent 60%), #0a0a12;
+    }
+    .theme-card-preview.preview-ps {
+      background: radial-gradient(ellipse at 30% 30%, rgba(0,114,255,0.45), transparent 60%), #00070f;
+    }
+    .theme-card-preview.preview-sprouty {
+      background: radial-gradient(ellipse at 30% 30%, rgba(92,158,46,0.25), transparent 60%), #f5f0e8;
+    }
+    .theme-card-preview.preview-white {
+      background: radial-gradient(ellipse at 30% 30%, rgba(37,99,235,0.18), transparent 55%), #ffffff;
+    }
+    .theme-card-label {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      border-top: 1px solid var(--line);
+      text-align: center;
+    }
+    .theme-check {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(var(--accent-rgb),0.9);
+      color: #fff;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      display: none;
+    }
+    .theme-card.selected .theme-check { display: flex; }
+
+    /* PS symbols decorative */
+    .ps-hud {
+      position: absolute;
+      bottom: 6px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      font-size: 10px;
+    }
+    .ps-circle { color: #e8a020; }
+    .ps-cross  { color: #4ba0e8; }
+    .ps-square { color: #d080c0; }
+    .ps-triangle { color: #40b080; }
+
+    /* Sprouty mascot in sprouty theme */
+    .sprouty-deco {
+      display: none;
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .sprouty-corner {
+      bottom: 72px;
+      right: 10px;
+      opacity: 0.18;
+    }
+    .sprouty-home-deco {
+      position: relative;
+      display: none;
+      justify-content: center;
+      margin: 8px 0 -8px;
+    }
+    body.theme-sprouty .sprouty-home-deco { display: flex; }
+
+    /* PS theme special header gradient */
+    body.theme-ps .library-header,
+    body.theme-ps .detail-header,
+    body.theme-ps .runtime-header {
+      border-bottom-color: rgba(0,150,255,0.18);
+    }
+    body.theme-ps .brand-large h1 {
+      background: linear-gradient(135deg, #60b8ff, #ffffff, #0072ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    body.theme-ps .library-btn {
+      background: linear-gradient(135deg, rgba(0,114,255,0.35) 0%, var(--glass) 100%) !important;
+    }
+    /* Sprouty theme text adjustments */
+    body.theme-sprouty .brand-large h1 {
+      background: linear-gradient(135deg, #3d7318, #5c9e2e, #7dc84a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    body.theme-sprouty .app-card {
+      background: rgba(255,255,255,0.6) !important;
+      box-shadow: 0 8px 24px rgba(80,60,20,0.12), inset 0 1px 0 rgba(255,255,255,0.9) !important;
+    }
+    body.theme-sprouty .library-btn {
+      background: linear-gradient(135deg, rgba(92,158,46,0.32) 0%, rgba(255,255,255,0.55) 100%) !important;
+    }
+    body.theme-sprouty .community-tab.active {
+      background: linear-gradient(135deg, rgba(92,158,46,0.85), rgba(60,120,20,0.7)) !important;
+    }
+    body.theme-sprouty .modal-panel {
+      background: rgba(255,248,235,0.90) !important;
+    }
+    body.theme-sprouty .form-input {
+      background: rgba(255,255,255,0.70) !important;
+    }
+
+    /* home-community-btn */
+    .home-community-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 12px;
+      transition: background var(--transition), box-shadow var(--transition);
+      box-shadow: inset 0 1px 0 var(--glass-shine);
+    }
+    .home-community-btn:active { box-shadow: 0 4px 14px var(--accent-glow), inset 0 1px 0 var(--glass-shine); }
+
+
+
+    /* PS theme icon swaps */
+    body.theme-ps .default-icon { display: none !important; }
+    body.theme-ps .lib-back-btn::after { content: "○"; font-size: 20px; color: #e8a020; font-weight: 900; }
+    body.theme-ps .lib-add-btn::after { content: "□"; font-size: 18px; color: #d080c0; font-weight: 900; }
+    body.theme-ps #detailBackBtn::after { content: "○"; font-size: 20px; color: #e8a020; font-weight: 900; }
+    body.theme-ps .runtime-close::after { content: "✕"; font-size: 16px; color: #4ba0e8; font-weight: 900; }
+    body.theme-ps .settings-btn .default-icon { display: inline !important; }
+    body.theme-ps #communityRefreshBtn::after { content: "△"; font-size: 16px; color: #40b080; font-weight: 900; }
+    body.theme-ps #communityRefreshBtn .default-icon { display: none !important; }
+
+
+    /* PS theme: XMB-inspired home */
+    body.theme-ps .brand-large small {
+      letter-spacing: 0.5em;
+      color: rgba(100,180,255,0.6);
+    }
+    body.theme-ps .home-community-btn {
+      border-color: rgba(0,150,255,0.35);
+      background: rgba(0,80,180,0.22);
+    }
+    body.theme-ps .settings-btn {
+      border-color: rgba(0,150,255,0.4);
+      background: rgba(0,80,180,0.25);
+    }
+    body.theme-ps .library-btn-icon::after { content: ""; }
+    body.theme-ps .app-card {
+      border-color: rgba(0,150,255,0.22);
+      background: rgba(0,20,60,0.55);
+    }
+    body.theme-ps .community-tab.active {
+      background: linear-gradient(135deg, rgba(0,160,255,0.85), rgba(0,80,200,0.65)) !important;
+      border-color: rgba(0,160,255,0.6) !important;
+      box-shadow: 0 6px 20px rgba(0,160,255,0.28) !important;
+    }
+    body.theme-ps .modal-panel {
+      background: rgba(0,10,30,0.88) !important;
+      border-color: rgba(0,150,255,0.2) !important;
+    }
+    body.theme-ps .form-input {
+      background: rgba(0,30,70,0.5) !important;
+      border-color: rgba(0,150,255,0.25) !important;
+      color: rgba(200,230,255,0.95) !important;
+    }
+    body.theme-ps .btn-primary {
+      background: linear-gradient(135deg, rgba(0,160,255,0.9), rgba(0,100,220,0.7)) !important;
+      box-shadow: 0 10px 28px rgba(0,160,255,0.28) !important;
+    }
+    body.theme-ps .quick-app {
+      background: rgba(0,20,60,0.5);
+      border-color: rgba(0,150,255,0.18);
+    }
+    body.theme-ps .detail-action-btn.active {
+      border-color: rgba(0,180,255,0.5) !important;
+      background: rgba(0,120,255,0.18) !important;
+    }
+    /* PS: glow on lib-back/add */
+    body.theme-ps .lib-back-btn,
+    body.theme-ps .lib-add-btn {
+      border-color: rgba(0,150,255,0.35);
+      background: rgba(0,50,150,0.25);
+    }
+
+    /* ===== PS DUST PARTICLES ===== */
+    .ps-dust-canvas {
+      will-change: transform;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 1s ease;
+      display: none;
+    }
+    body.theme-ps .ps-dust-canvas {
+      display: block;
+      opacity: 1;
+    }
+
+    /* ===== PS ICON OVERRIDES ===== */
+    body.theme-ps .settings-btn::after {
+      content: none;
+    }
+    /* PS button symbols for nav icons */
+    body.theme-ps #libraryBackBtn { font-size: 16px; }
+    body.theme-ps #communityBackBtn { font-size: 16px; }
+    body.theme-ps #detailBackBtn { font-size: 16px; }
+    body.theme-ps .runtime-close { font-size: 16px; }
+
+  </style>
+</head>
+<body>
+  <!-- Sprouty corner decoration (visible in Sprouty theme) -->
+  <div class="sprouty-deco sprouty-corner" aria-hidden="true">
+    <img src="sprouty.jpg" alt="" width="120" style="border-radius:50%; display:block;" />
+  </div>
+
+  <canvas class="ps-dust-canvas" id="psDustCanvas" aria-hidden="true"></canvas>
+  <audio id="bgmPlayer" src="bgm.mp3" loop preload="auto" playsinline></audio>
+  <div class="view home active" id="homeView">
+    <div class="topbar">
+      <button class="home-community-btn" id="openCommunityHomeBtn" title="커뮤니티">🌐 커뮤니티</button>
+      <button class="settings-btn" id="settingsBtn" title="설정"><span class="ps-icon-options" style="display:none;font-size:13px;font-weight:900;letter-spacing:-1px;">⋯</span><span class="default-icon">⚙️</span></button>
+      <button class="profile-chip" id="profileChip" title="계정">
+        <span class="profile-chip-avatar" id="profileChipAvatar">👤</span>
+        <span id="profileChipName">로그인</span>
+      </button>
+    </div>
+
+    <div class="home-content">
+      <div class="brand-large">
+        <small>APP LAUNCHER</small>
+        <h1>Launcher VIBE</h1>
+      </div>
+      <div class="sprouty-home-deco" aria-hidden="true">
+        <img src="sprouty.jpg" alt="" width="80" style="border-radius:50%; display:block; opacity:0.72;" />
+      </div>
+      <p class="brand-desc">나만의 앱을 만들고, 정리하고, 계정으로 동기화하는 공간</p>
+
+      <div class="cta-stack">
+        <button class="library-btn" id="toLibraryBtn">
+          <span class="library-btn-icon">📚</span>
+          <span class="library-btn-text">라이브러리 열기</span>
+          <span class="library-btn-sub">내 앱 관리하기</span>
+        </button>
+      </div>
+
+      <div class="home-shortcuts">
+        <div class="shortcut-column">
+          <p class="shortcut-title">최근 실행</p>
+          <div class="shortcut-list" id="recentAppsList"></div>
+        </div>
+        <div class="shortcut-column">
+          <p class="shortcut-title">즐겨찾기</p>
+          <div class="shortcut-list" id="favoriteAppsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="view library" id="libraryView">
+    <header class="library-header">
+      <div class="title-row">
+        <button class="lib-back-btn" id="libraryBackBtn" title="돌아가기"><span class="default-icon">←</span></button>
+        <h2>LAUNCHER VIBE</h2>
+        <button class="lib-add-btn" id="libraryAddBtn" title="앱 추가"><span class="default-icon">＋</span></button>
+      </div>
+      <div class="lib-search">
+        <input type="text" id="librarySearchInput" placeholder="앱 검색..." />
+      </div>
+    </header>
+    <div class="content-scroll">
+      <div class="apps-grid" id="appsGrid"></div>
+    </div>
+  </div>
+
+  <div class="view community" id="communityView">
+    <header class="library-header">
+      <div class="title-row">
+        <button class="lib-back-btn" id="communityBackBtn" title="돌아가기"><span class="default-icon">←</span></button>
+        <h2>게시판</h2>
+        <button class="lib-add-btn" id="communityRefreshBtn" title="새로고침"><span class="default-icon">↻</span></button>
+      </div>
+      <div class="community-tabs" role="tablist">
+        <button class="community-tab active" id="communityFeedTabBtn" type="button" role="tab" aria-selected="true">📰 피드</button>
+        <button class="community-tab" id="communityComposeTabBtn" type="button" role="tab" aria-selected="false">✏️ 작성</button>
+      </div>
+      <div class="lib-search" id="communitySearchWrap">
+        <input type="text" id="communitySearchInput" placeholder="제목, 작성자 검색..." />
+      </div>
+    </header>
+    <div class="content-scroll">
+      <div id="communityFeedSection" style="display:grid; gap:0;"></div>
+      <div id="communityPostSection" style="display:none;">
+        <div class="community-composer">
+          <div class="compose-author-preview" id="composeAuthorPreview">
+            <div class="compose-author-avatar" id="composeAuthorAvatar">👤</div>
+            <div class="compose-author-meta">
+              <div class="compose-author-name" id="composeAuthorName">로그인 필요</div>
+              <div class="compose-author-status" id="composeAuthorStatus">상태메시지를 설정해 주세요</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">제목</label>
+            <input type="text" class="form-input" id="communityPostTitle" placeholder="글 제목" maxlength="100" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">내용</label>
+            <textarea class="form-input" id="communityPostContent" placeholder="무엇을 공유할까요?" maxlength="1000"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">앱 첨부 (선택)</label>
+            <select class="form-input" id="communityAttachSelect"></select>
+          </div>
+
+          <div class="community-post-meta">
+            <span class="community-post-chip">프로필 사진, 이름, 상태메시지가 함께 표시돼요</span>
+          </div>
+
+          <div class="error-msg" id="communityPostError"></div>
+
+          <div class="auth-actions">
+            <button class="btn btn-secondary" id="communityBackToFeedBtn" type="button">취소</button>
+            <button class="btn btn-primary" id="communitySubmitBtn" type="button">게시하기</button>
+          </div>
+          <p class="muted-note">로그인 + 상태메시지 설정 후 게시할 수 있어요.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="community-detail-view" id="communityDetailView">
+    <header class="detail-header">
+      <button id="detailBackBtn" title="돌아가기"><span class="default-icon">←</span></button>
+      <h3 id="detailPostTitle">글 상세</h3>
+    </header>
+    <div class="detail-content">
+      <div id="detailPostContainer"></div>
+    </div>
+  </div>
+
+  <div class="view runtime" id="runtimeView">
+    <header class="runtime-header">
+      <h2 class="runtime-title" id="runtimeTitle">앱</h2>
+      <button class="runtime-close" id="runtimeCloseBtn" title="닫기"><span class="default-icon">✕</span></button>
+    </header>
+    <div class="runtime-content">
+      <iframe class="runtime-iframe" id="runtimeFrame" sandbox="allow-scripts allow-forms allow-popups allow-presentation"></iframe>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3>⚙️ 설정</h3>
+        <button class="modal-close" id="closeSettings" type="button">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="settings-section">
+          <h4>정보</h4>
+          <p>앱 개수: <strong id="appTotal">0</strong>개</p>
+          <p>런타임 저장소: <strong id="runtimeCount">0</strong>개</p>
+          <p>버전: <strong>1.0</strong></p>
+        </div>
+        <div class="settings-section">
+          <h4>계정</h4>
+          <p>상태: <strong id="authStateLabel">로그아웃</strong></p>
+          <button class="modal-btn btn btn-secondary" id="openAuthFromSettings">🔑 로그인 / 회원가입</button>
+          <button class="modal-btn btn btn-secondary" id="openProfileFromSettings">👤 프로필 편집</button>
+        </div>
+        <div class="settings-section">
+          <h4>데이터</h4>
+          <button class="modal-btn btn btn-secondary" id="exportData">📥 내보내기</button>
+          <button class="modal-btn btn btn-secondary" id="importData">📤 가져오기</button>
+          <button class="modal-btn btn btn-secondary" id="openCommunityFromSettings">🌐 커뮤니티 열기</button>
+          <input type="file" id="importFile" accept=".json" style="display:none;">
+          <button class="modal-btn btn btn-secondary" id="clearData" style="color:rgba(255,100,100,0.8);">🗑️ 초기화</button>
+        </div>
+        <div class="settings-section">
+          <h4>🎨 테마</h4>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">원하는 테마를 선택하세요.</p>
+          <div class="theme-grid">
+            <div class="theme-card" id="themeCardDark" data-theme="dark">
+              <div class="theme-card-preview preview-dark">
+                <span style="font-size:32px;">🌌</span>
+                <div class="theme-check">✓</div>
+              </div>
+              <div class="theme-card-label" style="color:rgba(220,220,255,0.9); background:rgba(10,10,20,0.6);">기본 (Liquid Dark)</div>
+            </div>
+            <div class="theme-card" id="themeCardWhite" data-theme="white">
+              <div class="theme-card-preview preview-white">
+                <span style="font-size:32px;">☁️</span>
+                <div class="theme-check">✓</div>
+              </div>
+              <div class="theme-card-label" style="color:rgba(17,24,39,0.92); background:rgba(255,255,255,0.82);">심플 화이트</div>
+            </div>
+            <div class="theme-card" id="themeCardPs" data-theme="ps">
+              <div class="theme-card-preview preview-ps">
+                <div>
+                  <div style="font-size:26px; text-align:center;">🎮</div>
+                  <div class="ps-hud">
+                    <span class="ps-triangle">▲</span>
+                    <span class="ps-circle">●</span>
+                    <span class="ps-cross">✕</span>
+                    <span class="ps-square">■</span>
+                  </div>
+                </div>
+                <div class="theme-check">✓</div>
+              </div>
+              <div class="theme-card-label" style="color:rgba(160,210,255,0.9); background:rgba(0,10,28,0.7);">PlayStation</div>
+            </div>
+            <div class="theme-card" id="themeCardSprouty" data-theme="sprouty" style="grid-column:1/-1;">
+              <div class="theme-card-preview preview-sprouty" style="gap:12px; flex-direction:row; padding:0 16px;">
+                <img src="sprouty.jpg" alt="" width="54" height="54" style="border-radius:50%; object-fit:cover;" />
+                <div style="font-size:13px; font-weight:900; color:#3d7318; line-height:1.5;">
+                  <div>SPT The SPROUTY</div>
+                  <div style="font-size:10px; font-weight:600; color:#5c7030; opacity:0.85;">닌텐도 카툰 스타일 🌿</div>
+                </div>
+                <div class="theme-check">✓</div>
+              </div>
+              <div class="theme-card-label" style="color:#3d7318; background:rgba(220,240,190,0.55);">SPT The SPROUTY</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="authModal">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3>계정</h3>
+        <button class="modal-close" id="closeAuth" type="button">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="auth-tabs">
+          <button class="tab-btn active" id="loginTabBtn" type="button">로그인</button>
+          <button class="tab-btn" id="signupTabBtn" type="button">회원가입</button>
+        </div>
+        <div class="auth-card">
+          <div class="form-group">
+            <label class="form-label">이메일</label>
+            <input class="form-input" id="authEmail" type="email" placeholder="name@example.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">비밀번호</label>
+            <input class="form-input" id="authPassword" type="password" placeholder="비밀번호" autocomplete="current-password" />
+          </div>
+          <div class="auth-actions" style="margin-top:12px;">
+            <button class="btn btn-primary" id="authSubmitBtn" type="button">로그인</button>
+            <button class="btn btn-secondary" id="googleLoginBtn" type="button">Google로 계속</button>
+          </div>
+          <p class="muted-note" style="margin-top:12px;">이 계정은 앱 목록, 즐겨찾기, 런타임 저장 데이터를 사용자별로 동기화합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="profileModal">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3>프로필</h3>
+        <button class="modal-close" id="closeProfile" type="button">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="account-card">
+          <h4>현재 계정</h4>
+          <p>이메일: <strong id="profileEmailText">-</strong></p>
+          <p>UID: <strong id="profileUidText">-</strong></p>
+          <p>동기화: <strong id="syncStateText">로컬</strong></p>
+        </div>
+        <div class="auth-card">
+          <div class="form-group">
+            <label class="form-label">표시 이름</label>
+            <input class="form-input" id="displayNameInput" type="text" placeholder="사용자 이름" maxlength="40" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">상태메시지</label>
+            <input class="form-input" id="statusMessageInput" type="text" placeholder="지금 하고 있는 일 / 한 줄 상태" maxlength="80" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">프로필 사진 업로드</label>
+            <div class="profile-upload">
+              <div class="profile-photo-preview" id="profilePhotoPreview">
+                <span style="font-size:28px;">👤</span>
+              </div>
+              <div class="profile-upload-actions">
+                <label class="btn btn-secondary file-input-label" id="choosePhotoBtn" for="photoInput" role="button" tabindex="0">사진 선택</label>
+                <button class="btn btn-secondary" id="removePhotoBtn" type="button">사진 제거</button>
+                <input type="file" id="photoInput" accept="image/*" style="display:none;" />
+              </div>
+              <p class="muted-note">업로드한 사진은 자동으로 작은 크기로 저장됩니다.</p>
+            </div>
+          </div>
+          <div class="auth-actions" style="margin-top:12px;">
+            <button class="btn btn-primary" id="saveProfileBtn" type="button">저장</button>
+            <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h3 id="modalTitle">새 앱 추가</h3>
+        <button class="modal-close" id="closeModalBtn" type="button">✕</button>
+      </header>
+      <div class="modal-content">
+        <div class="error-msg" id="errorMsg"></div>
+
+        <div class="form-group">
+          <label class="form-label">앱 이름</label>
+          <input type="text" id="nameInput" class="form-input" placeholder="예: 내 할일" maxlength="50" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">설명</label>
+          <textarea id="descInput" class="form-input" placeholder="앱에 대한 간단한 설명..." maxlength="200"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">출시 날짜</label>
+          <input type="date" id="dateInput" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">아이콘 이미지</label>
+          <div class="file-input-wrapper">
+            <label class="file-input-label" id="chooseIconBtn" for="iconInput" role="button" tabindex="0">파일 선택 또는 드래그</label>
+            <input type="file" id="iconInput" accept="image/*" />
+          </div>
+          <div class="icon-preview" id="iconPreview">
+            <div class="icon-preview-img" id="iconPreviewImg"></div>
+            <div class="icon-preview-text" id="iconPreviewName"></div>
+            <button class="btn-inline" id="iconRemoveBtn" type="button">제거</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">HTML 앱 파일</label>
+          <div class="file-input-wrapper">
+            <label class="file-input-label" id="chooseHtmlBtn" for="htmlInput" role="button" tabindex="0">HTML 파일 선택</label>
+            <input type="file" id="htmlInput" accept=".html,.htm" />
+          </div>
+          <div class="icon-preview" id="htmlPreview">
+            <div class="icon-preview-text" id="htmlPreviewName"></div>
+            <button class="btn-inline" id="htmlRemoveBtn" type="button">제거</button>
+          </div>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button class="btn btn-secondary" id="cancelBtn" type="button">취소</button>
+        <button class="btn btn-primary" id="saveBtn" type="button">저장</button>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      GoogleAuthProvider,
+      signInWithPopup,
+      updateProfile
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      deleteDoc,
+      getDoc,
+      getDocs,
+      collection,
+      addDoc,
+      query,
+      orderBy,
+      limit,
+      arrayUnion,
+      arrayRemove,
+      serverTimestamp,
+      onSnapshot,
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCAh_YgvwxgUyCC_auTZXs6KycA8QM6Knc",
+      authDomain: "launcher-vibe.firebaseapp.com",
+      projectId: "launcher-vibe",
+      storageBucket: "launcher-vibe.firebasestorage.app",
+      messagingSenderId: "429799261697",
+      appId: "1:429799261697:web:ac414361432484cf896200",
+      measurementId: "G-W2S8C90Q1B"
+    };
+
+    const firebaseApp = initializeApp(firebaseConfig);
+    try { getAnalytics(firebaseApp); } catch (_) {}
+    const auth = getAuth(firebaseApp);
+    const db = getFirestore(firebaseApp);
+    const googleProvider = new GoogleAuthProvider();
+
+    const STORAGE_KEY = 'launcherVibeLocalState.v2';
+    const COMMUNITY_STORAGE_KEY = 'launcherVibeCommunityLocal.v2';
+    const CURRENT_VERSION = '1.0';
+
+    const state = {
+      currentView: 'home',
+      apps: [],
+      runtimeStores: {},
+      searchQuery: '',
+      communitySearchQuery: '',
+      editingId: null,
+      runtimeAppId: null,
+      currentUser: null,
+      profile: { displayName: '', photoData: '', statusMessage: '' },
+      formData: { name: '', description: '', date: '', iconImage: '', htmlContent: '' },
+      activeAuthTab: 'login',
+      cloudReady: false,
+      cloudSyncPending: false,
+      communityPosts: [],
+      detailViewPostId: null,
+      activeAppMenuId: null,
+      appMenuTimer: null,
+      theme: localStorage.getItem('launcherVibeTheme') || 'dark',
+    };
+
+    const applyTheme = (theme) => {
+      state.theme = theme;
+      document.body.classList.remove('theme-ps', 'theme-sprouty', 'theme-white');
+      if (theme === 'ps') document.body.classList.add('theme-ps');
+      if (theme === 'sprouty') document.body.classList.add('theme-sprouty');
+      if (theme === 'white') document.body.classList.add('theme-white');
+      localStorage.setItem('launcherVibeTheme', theme);
+      const themeColor = theme === 'white' ? '#f7f8fb' : theme === 'ps' ? '#00070f' : theme === 'sprouty' ? '#f5f0e8' : '#070816';
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      if (themeMeta) themeMeta.setAttribute('content', themeColor);
+      document.querySelectorAll('.theme-card').forEach(card => {
+        card.classList.toggle('selected', card.getAttribute('data-theme') === theme);
+      });
+    };
+
+    const getSignedInUser = () => auth.currentUser || state.currentUser || null;
+    const syncCurrentUserState = () => {
+      const user = getSignedInUser();
+      if (user && state.currentUser?.uid !== user.uid) {
+        state.currentUser = user;
+      }
+      return user;
+    };
+
+    const uid = () => Math.random().toString(36).substr(2, 9);
+    const escapeHtml = (text) => {
+      const div = document.createElement('div');
+      div.textContent = String(text || '');
+      return div.innerHTML;
+    };
+
+    const sanitizeApps = (apps) => {
+      if (!Array.isArray(apps)) return [];
+      return apps.map(app => ({
+        id: app.id || uid(),
+        name: String(app.name || ''),
+        description: String(app.description || ''),
+        date: String(app.date || ''),
+        iconImage: String(app.iconImage || ''),
+        htmlContent: String(app.htmlContent || ''),
+        favorite: Boolean(app.favorite),
+        pinned: Boolean(app.pinned),
+        lastOpened: Number(app.lastOpened || 0),
+        timestamp: Number(app.timestamp || 0),
+      }));
+    };
+
+    const mergeAppsById = (...lists) => {
+      const map = new Map();
+      lists.flat().forEach(app => {
+        if (!app || !app.id) return;
+        const next = sanitizeApps([app])[0];
+        const prev = map.get(next.id);
+        if (!prev) {
+          map.set(next.id, next);
+          return;
+        }
+        const prevStamp = Number(prev.timestamp || 0);
+        const nextStamp = Number(next.timestamp || 0);
+        map.set(next.id, nextStamp >= prevStamp ? { ...prev, ...next } : { ...next, ...prev });
+      });
+      return Array.from(map.values()).sort((a, b) => {
+        const pinDiff = Number(b.pinned) - Number(a.pinned);
+        if (pinDiff) return pinDiff;
+        const favDiff = Number(b.favorite) - Number(a.favorite);
+        if (favDiff) return favDiff;
+        const timeDiff = Number(b.timestamp || 0) - Number(a.timestamp || 0);
+        if (timeDiff) return timeDiff;
+        return Number(b.lastOpened || 0) - Number(a.lastOpened || 0);
+      });
+    };
+
+    const sanitizeRuntimeStores = (stores) => {
+      if (!stores || typeof stores !== 'object') return {};
+      const result = {};
+      Object.entries(stores).forEach(([key, store]) => {
+        if (store && typeof store === 'object') {
+          result[key] = {
+            localStorage: store.localStorage && typeof store.localStorage === 'object' ? store.localStorage : {},
+            sessionStorage: store.sessionStorage && typeof store.sessionStorage === 'object' ? store.sessionStorage : {},
+          };
+        }
+      });
+      return result;
+    };
+
+    const sanitizeCommunityComments = (comments) => {
+      if (!Array.isArray(comments)) return [];
+      return comments.map(comment => ({
+        id: comment.id || uid(),
+        authorUid: comment.authorUid || '',
+        authorName: comment.authorName || '익명',
+        authorStatus: comment.authorStatus || '',
+        authorPhotoData: comment.authorPhotoData || '',
+        authorPhotoURL: comment.authorPhotoURL || '',
+        text: String(comment.text || ''),
+        createdAt: comment.createdAt || Date.now(),
+      }));
+    };
+
+    const sanitizeCommunityPosts = (posts) => {
+      if (!Array.isArray(posts)) return [];
+      return posts.map(post => ({
+        id: post.id || uid(),
+        sourceAppId: post.sourceAppId || '',
+        title: String(post.title || ''),
+        content: String(post.content || ''),
+        appName: String(post.appName || ''),
+        appDescription: String(post.appDescription || ''),
+        appIcon: String(post.appIcon || ''),
+        appDate: String(post.appDate || ''),
+        ownerUid: post.ownerUid || '',
+        ownerEmail: post.ownerEmail || '',
+        ownerName: post.ownerName || '익명',
+        ownerStatus: post.ownerStatus || '',
+        ownerPhotoData: post.ownerPhotoData || '',
+        ownerPhotoURL: post.ownerPhotoURL || '',
+        likesCount: Number(post.likesCount || 0),
+        likedBy: Array.isArray(post.likedBy) ? [...new Set(post.likedBy.map(v => String(v)))] : [],
+        commentsCount: Number(post.commentsCount || 0),
+        comments: sanitizeCommunityComments(post.comments || []),
+        createdAt: post.createdAt || Date.now(),
+        updatedAt: post.updatedAt || Date.now(),
+        localOnly: Boolean(post.localOnly),
+      }));
+    };
+
+    const loadLocalState = () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    };
+
+    const persistLocalState = () => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          apps: state.apps,
+          runtimeStores: state.runtimeStores,
+          profile: state.profile,
+        }));
+      } catch (_) {}
+    };
+
+    const readLocalCommunityPosts = () => {
+      try {
+        const raw = localStorage.getItem(COMMUNITY_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return sanitizeCommunityPosts(Array.isArray(parsed) ? parsed : parsed?.posts || []);
+      } catch {
+        return [];
+      }
+    };
+
+    const writeLocalCommunityPosts = (posts) => {
+      try {
+        localStorage.setItem(COMMUNITY_STORAGE_KEY, JSON.stringify(sanitizeCommunityPosts(posts)));
+      } catch (_) {}
+    };
+
+    const upsertLocalCommunityPost = (post) => {
+      const posts = readLocalCommunityPosts();
+      const idx = posts.findIndex(item => item.id === post.id);
+      const next = sanitizeCommunityPosts([post])[0];
+      if (idx >= 0) posts[idx] = { ...posts[idx], ...next };
+      else posts.unshift(next);
+      writeLocalCommunityPosts(posts);
+      return posts;
+    };
+
+    const mergeCommunityPosts = (remotePosts = [], localPosts = []) => {
+      const merged = [];
+      const seen = new Set();
+      [...sanitizeCommunityPosts(remotePosts), ...sanitizeCommunityPosts(localPosts)].forEach(post => {
+        if (!post?.id || seen.has(post.id)) return;
+        seen.add(post.id);
+        merged.push(post);
+      });
+      return merged.sort((a, b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+    };
+
+    const deepClone = (obj) => {
+      try { return JSON.parse(JSON.stringify(obj)); } catch { return obj; }
+    };
+
+    const safeJson = (obj) => {
+      try { return JSON.stringify(obj); } catch { return '{}'; }
+    };
+
+    const els = {
+      homeView: document.getElementById('homeView'),
+      libraryView: document.getElementById('libraryView'),
+      communityView: document.getElementById('communityView'),
+      communityDetailView: document.getElementById('communityDetailView'),
+      runtimeView: document.getElementById('runtimeView'),
+      recentAppsList: document.getElementById('recentAppsList'),
+      favoriteAppsList: document.getElementById('favoriteAppsList'),
+      settingsBtn: document.getElementById('settingsBtn'),
+      profileChip: document.getElementById('profileChip'),
+      profileChipAvatar: document.getElementById('profileChipAvatar'),
+      profileChipName: document.getElementById('profileChipName'),
+      openCommunityHomeBtn: document.getElementById('openCommunityHomeBtn'),
+      toLibraryBtn: document.getElementById('toLibraryBtn'),
+      libraryBackBtn: document.getElementById('libraryBackBtn'),
+      communityBackBtn: document.getElementById('communityBackBtn'),
+      communityRefreshBtn: document.getElementById('communityRefreshBtn'),
+      libraryAddBtn: document.getElementById('libraryAddBtn'),
+      librarySearchInput: document.getElementById('librarySearchInput'),
+      appsGrid: document.getElementById('appsGrid'),
+      runtimeTitle: document.getElementById('runtimeTitle'),
+      runtimeCloseBtn: document.getElementById('runtimeCloseBtn'),
+      runtimeFrame: document.getElementById('runtimeFrame'),
+      settingsModal: document.getElementById('settingsModal'),
+      closeSettings: document.getElementById('closeSettings'),
+      appTotal: document.getElementById('appTotal'),
+      runtimeCount: document.getElementById('runtimeCount'),
+      authStateLabel: document.getElementById('authStateLabel'),
+      openAuthFromSettings: document.getElementById('openAuthFromSettings'),
+      openProfileFromSettings: document.getElementById('openProfileFromSettings'),
+      exportData: document.getElementById('exportData'),
+      importData: document.getElementById('importData'),
+      importFile: document.getElementById('importFile'),
+      clearData: document.getElementById('clearData'),
+      openCommunityFromSettings: document.getElementById('openCommunityFromSettings'),
+      authModal: document.getElementById('authModal'),
+      closeAuth: document.getElementById('closeAuth'),
+      chooseIconBtn: document.getElementById('chooseIconBtn'),
+      chooseHtmlBtn: document.getElementById('chooseHtmlBtn'),
+      loginTabBtn: document.getElementById('loginTabBtn'),
+      signupTabBtn: document.getElementById('signupTabBtn'),
+      authEmail: document.getElementById('authEmail'),
+      authPassword: document.getElementById('authPassword'),
+      authSubmitBtn: document.getElementById('authSubmitBtn'),
+      googleLoginBtn: document.getElementById('googleLoginBtn'),
+      profileModal: document.getElementById('profileModal'),
+      closeProfile: document.getElementById('closeProfile'),
+      profileEmailText: document.getElementById('profileEmailText'),
+      profileUidText: document.getElementById('profileUidText'),
+      syncStateText: document.getElementById('syncStateText'),
+      displayNameInput: document.getElementById('displayNameInput'),
+      statusMessageInput: document.getElementById('statusMessageInput'),
+      profilePhotoPreview: document.getElementById('profilePhotoPreview'),
+      choosePhotoBtn: document.getElementById('choosePhotoBtn'),
+      removePhotoBtn: document.getElementById('removePhotoBtn'),
+      photoInput: document.getElementById('photoInput'),
+      saveProfileBtn: document.getElementById('saveProfileBtn'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      communitySearchInput: document.getElementById('communitySearchInput'),
+      communityFeedSection: document.getElementById('communityFeedSection'),
+      communityPostSection: document.getElementById('communityPostSection'),
+      communityPostTitle: document.getElementById('communityPostTitle'),
+      communityPostContent: document.getElementById('communityPostContent'),
+      communityAttachSelect: document.getElementById('communityAttachSelect'),
+      communitySubmitBtn: document.getElementById('communitySubmitBtn'),
+      communityBackToFeedBtn: document.getElementById('communityBackToFeedBtn'),
+      communityPostError: document.getElementById('communityPostError'),
+      communityDetailView: document.getElementById('communityDetailView'),
+      detailBackBtn: document.getElementById('detailBackBtn'),
+      detailPostTitle: document.getElementById('detailPostTitle'),
+      detailPostContainer: document.getElementById('detailPostContainer'),
+      communityFeedTabBtn: document.getElementById('communityFeedTabBtn'),
+      communityComposeTabBtn: document.getElementById('communityComposeTabBtn'),
+      communitySearchWrap: document.getElementById('communitySearchWrap'),
+      composeAuthorPreview: document.getElementById('composeAuthorPreview'),
+      composeAuthorAvatar: document.getElementById('composeAuthorAvatar'),
+      composeAuthorName: document.getElementById('composeAuthorName'),
+      composeAuthorStatus: document.getElementById('composeAuthorStatus'),
+      closeModalBtn: document.getElementById('closeModalBtn'),
+      cancelBtn: document.getElementById('cancelBtn'),
+      saveBtn: document.getElementById('saveBtn'),
+      modalBackdrop: document.getElementById('modalBackdrop'),
+      modalTitle: document.getElementById('modalTitle'),
+      nameInput: document.getElementById('nameInput'),
+      descInput: document.getElementById('descInput'),
+      dateInput: document.getElementById('dateInput'),
+      iconInput: document.getElementById('iconInput'),
+      htmlInput: document.getElementById('htmlInput'),
+      iconPreview: document.getElementById('iconPreview'),
+      iconPreviewImg: document.getElementById('iconPreviewImg'),
+      iconPreviewName: document.getElementById('iconPreviewName'),
+      iconRemoveBtn: document.getElementById('iconRemoveBtn'),
+      htmlPreview: document.getElementById('htmlPreview'),
+      htmlPreviewName: document.getElementById('htmlPreviewName'),
+      htmlRemoveBtn: document.getElementById('htmlRemoveBtn'),
+      errorMsg: document.getElementById('errorMsg'),
+      bgmPlayer: document.getElementById('bgmPlayer'),
+    };
+
+    const setError = (msg) => {
+      if (!els.errorMsg) return;
+      els.errorMsg.textContent = msg;
+      if (msg) els.errorMsg.style.display = 'block';
+      else els.errorMsg.style.display = 'none';
+    };
+
+    const setCommunityPostError = (msg) => {
+      if (!els.communityPostError) return;
+      els.communityPostError.textContent = msg;
+      if (msg) els.communityPostError.style.display = 'block';
+      else els.communityPostError.style.display = 'none';
+    };
+
+    const showView = (viewName) => {
+      document.querySelectorAll('.view, .community-detail-view').forEach(el => el.classList.remove('active'));
+      if (viewName === 'home') els.homeView?.classList.add('active');
+      if (viewName === 'library') {
+        els.libraryView?.classList.add('active');
+        renderLibrary();
+      }
+      if (viewName === 'community') {
+        els.communityView?.classList.add('active');
+        renderCommunityFeed();
+      }
+      if (viewName === 'runtime') els.runtimeView?.classList.add('active');
+      state.currentView = viewName;
+    };
+
+    const openCommunityView = async () => {
+      showView('community');
+      switchCommunityTab('feed');
+      await loadCommunityFeed();
+    };
+
+    const switchCommunityTab = (tab) => {
+      const isCompose = tab === 'compose';
+      if (els.communityFeedTabBtn) {
+        els.communityFeedTabBtn.classList.toggle('active', !isCompose);
+        els.communityFeedTabBtn.setAttribute('aria-selected', String(!isCompose));
+      }
+      if (els.communityComposeTabBtn) {
+        els.communityComposeTabBtn.classList.toggle('active', isCompose);
+        els.communityComposeTabBtn.setAttribute('aria-selected', String(isCompose));
+      }
+      if (els.communityFeedSection) els.communityFeedSection.style.display = isCompose ? 'none' : 'grid';
+      if (els.communityPostSection) els.communityPostSection.style.display = isCompose ? 'grid' : 'none';
+      if (els.communitySearchWrap) els.communitySearchWrap.style.display = isCompose ? 'none' : '';
+      if (isCompose) {
+        renderCommunityComposer();
+        setCommunityPostError('');
+        setTimeout(() => els.communityPostTitle?.focus(), 50);
+      }
+    };
+
+    const openCommunityCompose = async () => {
+      const user = syncCurrentUserState();
+      if (!user) {
+        alert('글쓰기는 로그인 후 이용할 수 있어요.');
+        showAuthModal();
+        return;
+      }
+      if (!(state.profile.statusMessage || '').trim()) {
+        alert('프로필에서 상태메시지를 먼저 설정해 주세요.');
+        showProfileModal();
+        return;
+      }
+      showView('community');
+      switchCommunityTab('compose');
+    };
+
+    const formatDate = (dateStr) => {
+      if (!dateStr) return '출시일 미정';
+      try {
+        const date = new Date(dateStr + 'T00:00:00');
+        return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' });
+      } catch {
+        return dateStr;
+      }
+    };
+
+    const formatTimeAgo = (value) => {
+      try {
+        const date = value?.toDate ? value.toDate() : new Date(value);
+        if (Number.isNaN(date.getTime())) return '';
+        const diff = Date.now() - date.getTime();
+        const mins = Math.max(1, Math.floor(diff / 60000));
+        if (mins < 60) return `${mins}분 전`;
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${hrs}시간 전`;
+        const days = Math.floor(hrs / 24);
+        return `${days}일 전`;
+      } catch {
+        return '';
+      }
+    };
+
+    const avatarMarkup = (photo, name) => {
+      if (photo) return `<img src="${photo}" alt="" />`;
+      const fallback = String(name || '👤').trim().slice(0, 1).toUpperCase();
+      return `<span style="font-weight:900;">${escapeHtml(fallback || '👤')}</span>`;
+    };
+
+    const normalizeHtmlText = (text) => String(text ?? '');
+
+    const readFileAsText = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(new Error('File read error'));
+      reader.readAsText(file);
+    });
+
+    const readFileAsDataURL = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(new Error('File read error'));
+      reader.readAsDataURL(file);
+    });
+
+    const resizeImageToDataURL = (file, maxSize = 256, quality = 0.88) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const ratio = Math.min(1, maxSize / Math.max(img.width || 1, img.height || 1));
+            canvas.width = Math.max(1, Math.round((img.width || 1) * ratio));
+            canvas.height = Math.max(1, Math.round((img.height || 1) * ratio));
+            const ctx = canvas.getContext('2d');
+            if (!ctx) { resolve(String(reader.result ?? '')); return; }
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          } catch (err) {
+            resolve(String(reader.result ?? ''));
+          }
+        };
+        img.onerror = () => reject(new Error('Image load error'));
+        img.src = String(reader.result ?? '');
+      };
+      reader.onerror = () => reject(new Error('File read error'));
+      reader.readAsDataURL(file);
+    });
+
+    const deriveVibeTags = (app) => {
+      const text = `${app.name || ''} ${app.description || ''}`.toLowerCase();
+      const tags = [];
+      if (/(ai|인공지능|모델|llm|assistant|chatgpt)/i.test(text)) tags.push('AI');
+      if (/(code|코드|개발|dev|program|script|github)/i.test(text)) tags.push('코딩');
+      if (/(setting|설정|profile|계정|auth|login)/i.test(text)) tags.push('설정');
+      if (/(green|초록|eco|health|clean)/i.test(text)) tags.push('그린');
+      return tags.slice(0, 4);
+    };
+
+    const playBgm = async () => {
+      const player = els.bgmPlayer;
+      if (!player) return;
+      try {
+        player.loop = true;
+        player.preload = 'auto';
+        player.volume = 0.35;
+        const result = player.play();
+        if (result && typeof result.catch === 'function') await result;
+      } catch (_) {}
+    };
+
+    const ensureBgmUnlock = () => {
+      if (!els.bgmPlayer) return;
+      playBgm();
+      const unlock = () => {
+        playBgm();
+        window.removeEventListener('pointerdown', unlock, true);
+        window.removeEventListener('touchstart', unlock, true);
+        window.removeEventListener('keydown', unlock, true);
+      };
+      window.addEventListener('pointerdown', unlock, true);
+      window.addEventListener('touchstart', unlock, true);
+      window.addEventListener('keydown', unlock, true);
+    };
+
+    const ensureRuntimeStore = (appId) => {
+      if (!state.runtimeStores[appId]) state.runtimeStores[appId] = { localStorage: {}, sessionStorage: {} };
+      if (!state.runtimeStores[appId].localStorage) state.runtimeStores[appId].localStorage = {};
+      if (!state.runtimeStores[appId].sessionStorage) state.runtimeStores[appId].sessionStorage = {};
+      return state.runtimeStores[appId];
+    };
+
+    const updateRuntimeStore = (appId, kind, data) => {
+      if (!appId || !kind || !data) return;
+      const store = ensureRuntimeStore(appId);
+      store[kind] = deepClone(data);
+      persistLocalState();
+      queueCloudSave();
+      updateRuntimeCount();
+    };
+
+    const buildRuntimeBootstrap = (appId) => {
+      const store = ensureRuntimeStore(appId);
+      return `
+<script>
+(() => {
+  const APP_ID = ${JSON.stringify(appId)};
+  const INITIAL = ${safeJson(store)};
+  const parentPost = (kind, data) => {
+    try {
+      parent.postMessage({ __launcher: true, type: 'runtime-storage', appId: APP_ID, kind, data }, '*');
+    } catch (_) {}
+  };
+  const createStorage = (kind) => {
+    const source = INITIAL[kind] && typeof INITIAL[kind] === 'object' ? INITIAL[kind] : {};
+    const data = new Map(Object.entries(source).map(([k, v]) => [String(k), String(v)]));
+    const dump = () => Object.fromEntries(data.entries());
+    const api = {
+      get length() { return data.size; },
+      key(index) { return Array.from(data.keys())[index] ?? null; },
+      getItem(key) { key = String(key); return data.has(key) ? data.get(key) : null; },
+      setItem(key, value) { data.set(String(key), String(value)); parentPost(kind, dump()); },
+      removeItem(key) { data.delete(String(key)); parentPost(kind, dump()); },
+      clear() { data.clear(); parentPost(kind, dump()); },
+      __dump: dump
+    };
+    return new Proxy(api, {
+      get(target, prop) {
+        if (prop in target) return target[prop];
+        if (typeof prop === 'string') return target.getItem(prop);
+        return target[prop];
+      },
+      set(target, prop, value) {
+        if (typeof prop === 'string' && !(prop in target)) { target.setItem(prop, value); return true; }
+        target[prop] = value; return true;
+      },
+      deleteProperty(target, prop) { if (typeof prop === 'string') target.removeItem(prop); return true; },
+      ownKeys() { return Array.from(data.keys()); },
+      getOwnPropertyDescriptor(target, prop) {
+        if (typeof prop === 'string' && data.has(prop)) {
+          return { enumerable: true, configurable: true, value: data.get(prop), writable: true };
+        }
+        return Object.getOwnPropertyDescriptor(target, prop) || { enumerable: false, configurable: true };
+      }
+    });
+  };
+  const ls = createStorage('localStorage');
+  const ss = createStorage('sessionStorage');
+  try { Object.defineProperty(window, 'localStorage', { value: ls, configurable: true }); } catch (_) { window.localStorage = ls; }
+  try { Object.defineProperty(window, 'sessionStorage', { value: ss, configurable: true }); } catch (_) { window.sessionStorage = ss; }
+  window.addEventListener('beforeunload', () => {
+    parentPost('localStorage', ls.__dump());
+    parentPost('sessionStorage', ss.__dump());
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      parentPost('localStorage', ls.__dump());
+      parentPost('sessionStorage', ss.__dump());
+    }
+  });
+  parentPost('ready', { ok: true });
+})();
+<\/script>`;
+    };
+
+    const buildRuntimeHtml = (app) => {
+      const raw = String(app.htmlContent || '');
+      const bootstrap = buildRuntimeBootstrap(app.id);
+      if (raw.includes('</head>')) return raw.replace('</head>', bootstrap + '</head>');
+      if (raw.includes('</body>')) return raw.replace('</body>', bootstrap + '</body>');
+      return raw + bootstrap;
+    };
+
+    const renderHomeShortcuts = () => {
+      const recentApps = state.apps.filter(a => a.lastOpened > 0).sort((a, b) => Number(b.lastOpened) - Number(a.lastOpened)).slice(0, 4);
+      const favoriteApps = state.apps.filter(a => a.favorite).sort((a, b) => Number(b.timestamp) - Number(a.timestamp)).slice(0, 4);
+
+      const renderList = (apps, emptyMsg, type) => {
+        if (!apps.length) return `<div style="padding:8px;text-align:center;font-size:11px;color:var(--text-muted2);">${emptyMsg}</div>`;
+        return apps.map(app => `
+          <button class="quick-app" type="button" data-quick-launch="${escapeHtml(app.id)}">
+            <span class="quick-app-icon">${app.iconImage ? `<img src="${app.iconImage}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />` : '📦'}</span>
+            <div class="quick-app-content">
+              <span class="quick-app-name">${escapeHtml(app.name)}</span>
+              <span class="quick-app-desc">${escapeHtml(app.description || '설명 없음')}</span>
+            </div>
+          </button>
+        `).join('');
+      };
+
+      els.recentAppsList.innerHTML = renderList(recentApps, '실행한 앱이 아직 없어요', 'recent');
+      els.favoriteAppsList.innerHTML = renderList(favoriteApps, '즐겨찾기 앱이 없어요', 'favorite');
+    };
+
+    const toggleFavorite = (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      app.favorite = !app.favorite;
+      app.timestamp = Date.now();
+      persistLocalState();
+      queueCloudSave();
+      renderLibrary();
+      renderHomeShortcuts();
+    };
+
+    const togglePin = (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      app.pinned = !app.pinned;
+      app.timestamp = Date.now();
+      persistLocalState();
+      queueCloudSave();
+      renderLibrary();
+      renderHomeShortcuts();
+    };
+
+    let draggedElement = null;
+    let draggedId = null;
+    const enableDragAndDrop = () => {
+      const cards = els.appsGrid.querySelectorAll('[data-id]');
+      cards.forEach(card => {
+        card.draggable = true;
+        card.addEventListener('dragstart', (e) => {
+          if (e.target.closest('button')) { e.preventDefault(); return; }
+          draggedElement = card;
+          draggedId = card.getAttribute('data-id');
+          card.classList.add('dragging');
+          try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', draggedId); } catch (_) {}
+        });
+        card.addEventListener('dragend', () => {
+          draggedElement = null;
+          draggedId = null;
+          card.classList.remove('dragging');
+          cards.forEach(c => c.classList.remove('drag-over'));
+        });
+        card.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (card === draggedElement) return;
+          card.classList.add('drag-over');
+        });
+        card.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+        card.addEventListener('drop', (e) => {
+          e.preventDefault();
+          if (!draggedId || draggedId === card.getAttribute('data-id')) return;
+          const draggedIndex = state.apps.findIndex(a => a.id === draggedId);
+          const targetIndex = state.apps.findIndex(a => a.id === card.getAttribute('data-id'));
+          if (draggedIndex !== -1 && targetIndex !== -1) {
+            const [draggedApp] = state.apps.splice(draggedIndex, 1);
+            state.apps.splice(targetIndex, 0, draggedApp);
+            persistLocalState();
+            queueCloudSave();
+            renderLibrary();
+            renderHomeShortcuts();
+          }
+          card.classList.remove('drag-over');
+        });
+      });
+    };
+
+    const hideAppMenus = () => {
+      document.querySelectorAll('.app-card.show-actions').forEach(card => card.classList.remove('show-actions'));
+      state.activeAppMenuId = null;
+      clearTimeout(state.appMenuTimer);
+      state.appMenuTimer = null;
+    };
+
+    const openAppMenu = (card) => {
+      if (!card) return;
+      hideAppMenus();
+      card.classList.add('show-actions');
+      state.activeAppMenuId = card.getAttribute('data-id');
+      clearTimeout(state.appMenuTimer);
+      state.appMenuTimer = setTimeout(() => hideAppMenus(), 2800);
+    };
+
+    const bindLibraryCardInteractions = () => {
+      const cards = Array.from(els.appsGrid.querySelectorAll('[data-id]'));
+      cards.forEach(card => {
+        let pressTimer = null;
+        let longPressed = false;
+        const beginPress = (e) => {
+          if (e.target.closest('button')) return;
+          longPressed = false;
+          clearTimeout(pressTimer);
+          pressTimer = setTimeout(() => {
+            longPressed = true;
+            openAppMenu(card);
+          }, 450);
+        };
+        const cancelPress = () => {
+          clearTimeout(pressTimer);
+          pressTimer = null;
+        };
+        card.addEventListener('contextmenu', (e) => { e.preventDefault(); openAppMenu(card); });
+        card.addEventListener('pointerdown', beginPress);
+        card.addEventListener('pointerup', cancelPress);
+        card.addEventListener('pointerleave', cancelPress);
+        card.addEventListener('pointercancel', cancelPress);
+        card.addEventListener('click', (e) => {
+          const actionBtn = e.target.closest('button');
+          if (actionBtn) return;
+          if (card.classList.contains('show-actions')) {
+            hideAppMenus();
+            return;
+          }
+          if (longPressed) return;
+          launchApp(card.getAttribute('data-id'));
+        });
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.app-card')) hideAppMenus();
+      }, { once: true });
+    };
+
+    const renderLibrary = () => {
+      const query = state.searchQuery.trim().toLowerCase();
+      const filtered = query
+        ? state.apps.filter(app => (app.name + ' ' + (app.description || '')).toLowerCase().includes(query))
+        : state.apps;
+      const ordered = [...filtered].sort((a, b) => {
+        const pinDiff = Number(b.pinned) - Number(a.pinned);
+        if (pinDiff) return pinDiff;
+        const favDiff = Number(b.favorite) - Number(a.favorite);
+        if (favDiff) return favDiff;
+        return Number(b.timestamp || 0) - Number(a.timestamp || 0);
+      });
+
+      if (!ordered.length) {
+        els.appsGrid.innerHTML = `
+          <div style="grid-column:1/-1;">
+            <div class="empty-state">
+              <span class="empty-badge">${state.apps.length ? '🔍' : '📦'}</span>
+              <h4>${state.apps.length ? '검색 결과가 없어요' : '아직 앱이 없어요'}</h4>
+              <p>${state.apps.length ? '검색어를 바꿔봐.' : '오른쪽 위 ＋ 버튼으로 첫 앱을 만들어봐.'}</p>
+            </div>
+          </div>`;
+        return;
+      }
+
+      els.appsGrid.innerHTML = ordered.map(app => `
+        <article class="app-card ${app.pinned ? 'pin-active' : ''}" data-id="${app.id}">
+          <div class="app-card-menu">
+            <button class="app-card-btn" type="button" data-share="${app.id}" title="업로드">
+              <svg viewBox="0 0 24 24"><path d="M12 3v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 7l4-4 4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="app-card-btn ${app.pinned ? 'active' : ''}" type="button" data-pin="${app.id}" title="고정">
+              <svg viewBox="0 0 24 24"><path d="M14 3l7 7-3 1-3 7-2-2-4 4-1-1 4-4-2-2 7-3 1-3z" fill="currentColor"/></svg>
+            </button>
+            <button class="app-card-btn ${app.favorite ? 'favorite active' : 'favorite'}" type="button" data-favorite="${app.id}" title="즐겨찾기">
+              <svg viewBox="0 0 24 24"><path d="M12 17.2l-5.56 3.27 1.48-6.2L3 10.24l6.36-.53L12 4l2.64 5.71 6.36.53-4.92 4.03 1.48 6.2z" fill="currentColor"/></svg>
+            </button>
+            <button class="app-card-btn" type="button" data-edit="${app.id}" title="수정">
+              <svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z" fill="currentColor"/><path d="M13 6l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <button class="app-card-btn delete" type="button" data-delete="${app.id}" title="삭제">
+              <svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v6M14 10v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <div class="app-card-icon">${app.iconImage ? `<img src="${app.iconImage}" alt="" />` : '📦'}</div>
+          <div class="app-card-content">
+            <div class="app-card-name">${escapeHtml(app.name)}</div>
+            <div class="app-card-desc">${escapeHtml(app.description || '설명 없음')}</div>
+            <div class="app-card-date">${formatDate(app.date)}</div>
+          </div>
+        </article>
+      `).join('');
+
+      els.appsGrid.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openEditModal(btn.getAttribute('data-edit')); }));
+      els.appsGrid.querySelectorAll('[data-delete]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); deleteApp(btn.getAttribute('data-delete')); }));
+      els.appsGrid.querySelectorAll('[data-favorite]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); toggleFavorite(btn.getAttribute('data-favorite')); }));
+      els.appsGrid.querySelectorAll('[data-share]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); openCommunityPostForm(btn.getAttribute('data-share')); }));
+      els.appsGrid.querySelectorAll('[data-pin]').forEach(btn => btn.addEventListener('click', (e) => { e.stopPropagation(); togglePin(btn.getAttribute('data-pin')); }));
+      bindLibraryCardInteractions();
+    };
+
+    const renderCommunityComposer = () => {
+      const apps = state.apps || [];
+      if (els.communityAttachSelect) {
+        if (!apps.length) {
+          els.communityAttachSelect.innerHTML = `<option value="">첨부할 앱 없음 (그대로 게시 가능)</option>`;
+        } else {
+          els.communityAttachSelect.innerHTML = [
+            `<option value="">앱 첨부 안 함</option>`,
+            ...apps.map(app => `<option value="${escapeHtml(app.id)}">${escapeHtml(app.name || '무제 앱')}</option>`)
+          ].join('');
+        }
+      }
+      if (els.communitySubmitBtn) els.communitySubmitBtn.disabled = false;
+      renderComposeAuthorPreview();
+    };
+
+    const renderComposeAuthorPreview = () => {
+      const user = state.currentUser;
+      const name = state.profile.displayName || user?.displayName || user?.email?.split('@')[0] || (user ? '사용자' : '로그인 필요');
+      const status = state.profile.statusMessage || (user ? '상태메시지를 설정해 주세요' : '로그인 후 이용해 주세요');
+      const photo = state.profile.photoData || user?.photoURL || '';
+      if (els.composeAuthorName) els.composeAuthorName.textContent = name;
+      if (els.composeAuthorStatus) els.composeAuthorStatus.textContent = status;
+      if (els.composeAuthorAvatar) {
+        if (photo) {
+          els.composeAuthorAvatar.innerHTML = `<img src="${photo}" alt="" />`;
+        } else {
+          const initial = (name || '?').slice(0, 1).toUpperCase();
+          els.composeAuthorAvatar.textContent = initial;
+        }
+      }
+    };
+
+    const renderCommunityFeed = () => {
+      const queryText = (state.communitySearchQuery || '').trim().toLowerCase();
+      // 비로그인 배너 (피드 상단)
+      const guestBanner = !state.currentUser ? `
+        <div class="community-guest-banner">
+          <span>👀 게시글을 구경 중이에요</span>
+          <button class="community-guest-login-btn" id="guestLoginBtn" type="button">로그인하고 참여하기 →</button>
+        </div>` : '';
+      const items = (state.communityPosts || []).filter(item => {
+        const hay = `${item.title || ''} ${item.appName || ''} ${item.ownerName || ''} ${item.ownerStatus || ''}`.toLowerCase();
+        return !queryText || hay.includes(queryText);
+      });
+
+      if (!items.length) {
+        els.communityFeedSection.innerHTML = guestBanner + `
+          <div style="padding: 40px 20px; text-align: center;">
+            <div class="empty-state">
+              <span class="empty-badge">🧵</span>
+              <h4>아직 글이 없습니다</h4>
+              <p>로그인 후 첫 게시물을 올려보세요.</p>
+            </div>
+          </div>`;
+        const gb2 = document.getElementById('guestLoginBtn');
+        if (gb2) gb2.addEventListener('click', () => setModalOpen(els.authModal, true));
+        return;
+      }
+
+      const me = state.currentUser;
+      els.communityFeedSection.innerHTML = guestBanner + `<div class="community-board-list">${items.map(item => {
+        const excerpt = String(item.content || '').trim().slice(0, 120);
+        const appBadge = item.appName ? `
+          <div class="community-feed-app">
+            <span class="community-feed-app-icon">${item.appIcon ? `<img src="${item.appIcon}" alt="" />` : '📦'}</span>
+            <span>${escapeHtml(item.appName)}</span>
+          </div>` : '';
+        const liked = !!(me && Array.isArray(item.likedBy) && item.likedBy.includes(me.uid));
+        return `
+        <div class="community-feed-card" data-card-id="${item.id}">
+          <div class="community-feed-head" data-open-post="${item.id}">
+            <div class="community-feed-avatar">${avatarMarkup(item.ownerPhotoData || item.ownerPhotoURL, item.ownerName)}</div>
+            <div class="community-feed-meta">
+              <div class="community-feed-name-row">
+                <span class="community-feed-author">${escapeHtml(item.ownerName || '익명')}</span>
+                <span class="community-feed-time">${formatTimeAgo(item.createdAt)}</span>
+              </div>
+              <div class="community-feed-status">${escapeHtml(item.ownerStatus || '')}</div>
+            </div>
+          </div>
+          <button class="community-feed-title" type="button" data-open-post="${item.id}">${escapeHtml(item.title || '무제')}</button>
+          ${item.content ? `<div class="community-feed-preview" data-open-post="${item.id}">${escapeHtml(excerpt)}${item.content.length > 120 ? '…' : ''}</div>` : ''}
+          ${appBadge}
+          <div class="community-feed-actions">
+            <button class="community-feed-action ${liked ? 'liked' : ''}" type="button" data-like="${item.id}" title="좋아요">
+              <span class="ico">${liked ? '❤️' : '🤍'}</span>
+              <span>${item.likesCount || 0}</span>
+            </button>
+            <button class="community-feed-action" type="button" data-open-post="${item.id}" title="댓글">
+              <span class="ico">💬</span>
+              <span>${item.commentsCount || 0}</span>
+            </button>
+          </div>
+        </div>`;
+      }).join('')}</div>`;
+
+      const guestLoginBtn = document.getElementById('guestLoginBtn');
+      if (guestLoginBtn) guestLoginBtn.addEventListener('click', () => setModalOpen(els.authModal, true));
+      els.communityFeedSection.querySelectorAll('[data-open-post]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openCommunityDetail(el.getAttribute('data-open-post'));
+        });
+      });
+      els.communityFeedSection.querySelectorAll('[data-like]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleCommunityLike(el.getAttribute('data-like'));
+        });
+      });
+    };
+
+    const toMillis = (value, fallback = Date.now()) => {
+      if (value == null) return fallback;
+      if (typeof value === 'number') return Number.isFinite(value) ? value : fallback;
+      if (typeof value === 'string') {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+      }
+      if (typeof value?.toMillis === 'function') return value.toMillis();
+      if (typeof value?.seconds === 'number') return value.seconds * 1000 + Math.round((value.nanoseconds || 0) / 1e6);
+      return fallback;
+    };
+
+    const getCommunityPostById = (postId) => state.communityPosts.find(post => post.id === postId) || null;
+
+    const normalizeCommunityPost = (post) => {
+      const next = sanitizeCommunityPosts([post])[0];
+      next.createdAt = toMillis(post?.createdAt ?? next.createdAt, Date.now());
+      next.updatedAt = toMillis(post?.updatedAt ?? next.updatedAt, Date.now());
+      next.comments = sanitizeCommunityComments(post?.comments || next.comments || []);
+      next.likesCount = Number(post?.likesCount ?? next.likesCount ?? 0);
+      next.commentsCount = Number(post?.commentsCount ?? next.comments?.length ?? next.commentsCount ?? 0);
+      next.likedBy = Array.isArray(post?.likedBy) ? [...new Set(post.likedBy.map(v => String(v)))] : (Array.isArray(next.likedBy) ? next.likedBy : []);
+      next.localOnly = Boolean(post?.localOnly ?? next.localOnly);
+      return next;
+    };
+
+    const upsertCommunityPostState = (post) => {
+      const normalized = normalizeCommunityPost(post);
+      const map = new Map(state.communityPosts.map(item => [item.id, item]));
+      map.set(normalized.id, { ...(map.get(normalized.id) || {}), ...normalized });
+      state.communityPosts = mergeCommunityPosts(Array.from(map.values()));
+      writeLocalCommunityPosts(state.communityPosts);
+      renderCommunityFeed();
+      if (state.detailViewPostId === normalized.id && els.communityDetailView) renderCommunityDetail();
+      return normalized;
+    };
+
+    const persistCommunityPost = async (post) => {
+      const normalized = upsertCommunityPostState({ ...post, updatedAt: Date.now() });
+      try {
+        await setDoc(doc(db, 'communityPosts', normalized.id), {
+          ...normalized,
+          updatedAt: Date.now(),
+        }, { merge: true });
+      } catch (err) {
+        console.error('persistCommunityPost failed:', err);
+      }
+      return normalized;
+    };
+
+    let _communityUnsubscribe = null;
+
+    const showCommunityLoading = (show) => {
+      const sec = els.communityFeedSection;
+      if (!sec) return;
+      if (show) {
+        sec.innerHTML = `<div style="padding:40px 0; text-align:center; color:var(--text-muted2); font-size:13px;">
+          <div class="community-spinner"></div><div style="margin-top:10px;">불러오는 중...</div></div>`;
+      }
+    };
+
+    const loadCommunityFeed = async () => {
+      // 이미 구독 중이면 skip (실시간으로 이미 업데이트 중)
+      if (_communityUnsubscribe) {
+        renderCommunityComposer();
+        renderCommunityFeed();
+        return state.communityPosts;
+      }
+      showCommunityLoading(true);
+      // 로컬 캐시 먼저 표시
+      const localPosts = readLocalCommunityPosts();
+      if (localPosts.length) {
+        state.communityPosts = mergeCommunityPosts(localPosts);
+        renderCommunityComposer();
+        renderCommunityFeed();
+      }
+      // Firestore 실시간 구독
+      try {
+        const q = collection(db, 'communityPosts');
+        _communityUnsubscribe = onSnapshot(q, (snap) => {
+          const remotePosts = [];
+          snap.forEach((docSnap) => {
+            remotePosts.push(normalizeCommunityPost({ id: docSnap.id, ...(docSnap.data() || {}) }));
+          });
+          const local = readLocalCommunityPosts();
+          state.communityPosts = mergeCommunityPosts(remotePosts, local);
+          writeLocalCommunityPosts(state.communityPosts);
+          renderCommunityComposer();
+          renderCommunityFeed();
+          if (state.detailViewPostId) renderCommunityDetail();
+          // 게시글 수 표시
+          const countEl = document.getElementById('communityPostCount');
+          if (countEl) countEl.textContent = state.communityPosts.length;
+        }, (err) => {
+          console.warn('onSnapshot failed:', err);
+          // fallback: getDocs
+          getDocs(collection(db, 'communityPosts')).then(snap2 => {
+            const posts = [];
+            snap2.forEach(d => posts.push(normalizeCommunityPost({ id: d.id, ...d.data() })));
+            const local2 = readLocalCommunityPosts();
+            state.communityPosts = mergeCommunityPosts(posts, local2);
+            writeLocalCommunityPosts(state.communityPosts);
+            renderCommunityComposer();
+            renderCommunityFeed();
+          }).catch(() => {
+            renderCommunityComposer();
+            renderCommunityFeed();
+          });
+        });
+      } catch (err) {
+        console.warn('loadCommunityFeed setup failed:', err);
+        renderCommunityComposer();
+        renderCommunityFeed();
+      }
+      return state.communityPosts;
+    };
+
+    const openCommunityDetail = (postId) => {
+      const post = getCommunityPostById(postId);
+      if (!post) return;
+      state.detailViewPostId = postId;
+      renderCommunityDetail();
+      els.communityDetailView?.classList.add('active');
+    };
+
+    const renderCommunityDetail = () => {
+      const post = getCommunityPostById(state.detailViewPostId);
+      if (!post) {
+        els.detailPostTitle.textContent = '글 상세';
+        els.detailPostContainer.innerHTML = '<div class="detail-comment-empty">글을 찾을 수 없어요.</div>';
+        return;
+      }
+
+      const currentUser = syncCurrentUserState();
+      const liked = !!(currentUser && Array.isArray(post.likedBy) && post.likedBy.includes(currentUser.uid));
+      const comments = Array.isArray(post.comments) ? post.comments : [];
+      els.detailPostTitle.textContent = post.title || '글 상세';
+
+      els.detailPostContainer.innerHTML = `
+        <div class="detail-post-header">
+          <div class="detail-author-info">
+            <div class="detail-author-avatar">${avatarMarkup(post.ownerPhotoData || post.ownerPhotoURL, post.ownerName)}</div>
+            <div class="detail-author-meta">
+              <div class="detail-author-name">${escapeHtml(post.ownerName || '익명')}</div>
+              <div class="detail-author-status">${escapeHtml(post.ownerStatus || '')}</div>
+              <div class="detail-post-time">${formatTimeAgo(post.createdAt)}</div>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="detail-post-title">${escapeHtml(post.title || '무제')}</h4>
+        <div class="detail-post-content">${escapeHtml(post.content || '')}</div>
+
+        ${post.appName ? `
+          <div class="detail-app-section">
+            <div class="detail-app-label">Attached App</div>
+            <div class="detail-app-card">
+              <div class="detail-app-icon">${post.appIcon ? `<img src="${post.appIcon}" alt="" />` : '📦'}</div>
+              <div class="detail-app-meta">
+                <div class="detail-app-name">${escapeHtml(post.appName || '')}</div>
+                <div class="detail-app-desc">${escapeHtml(post.appDescription || '')}</div>
+              </div>
+            </div>
+          </div>` : ''}
+
+        <div class="detail-actions">
+          <button class="detail-action-btn ${liked ? 'active' : ''}" id="detailLikeBtn" type="button">❤️ 좋아요 ${post.likesCount || 0}</button>
+          <button class="detail-action-btn" id="detailJumpCommentBtn" type="button">💬 댓글 ${post.commentsCount || comments.length || 0}</button>
+          ${currentUser && post.ownerUid === currentUser.uid ? `<button class="detail-action-btn detail-delete-btn" id="detailDeleteBtn" type="button">🗑️ 삭제</button>` : ''}
+        </div>
+
+        <div class="detail-comments">
+          <form class="detail-comment-form" id="detailCommentForm">
+            <input type="text" id="detailCommentInput" placeholder="${currentUser ? '댓글을 남겨봐' : '로그인 후 댓글 달기'}" maxlength="200" ${currentUser ? '' : 'disabled'} />
+            <button type="submit" ${currentUser ? '' : 'disabled'}>↵</button>
+          </form>
+          <div id="detailCommentsList">
+            ${comments.length ? comments.map(comment => `
+              <div class="detail-comment">
+                <div class="detail-comment-avatar">${avatarMarkup(comment.authorPhotoData || comment.authorPhotoURL, comment.authorName)}</div>
+                <div class="detail-comment-bubble">
+                  <div class="detail-comment-meta">
+                    <span><strong>${escapeHtml(comment.authorName || '익명')}</strong></span>
+                    <span>${formatTimeAgo(comment.createdAt)}</span>
+                  </div>
+                  <div>${escapeHtml(comment.text || '')}</div>
+                </div>
+              </div>`).join('') : '<div class="detail-comment-empty">아직 댓글이 없어요.</div>'}
+          </div>
+        </div>
+      `;
+
+      const likeBtn = document.getElementById('detailLikeBtn');
+      const jumpCommentBtn = document.getElementById('detailJumpCommentBtn');
+      const commentForm = document.getElementById('detailCommentForm');
+      const commentInput = document.getElementById('detailCommentInput');
+
+      likeBtn?.addEventListener('click', () => toggleCommunityLike(post.id));
+      jumpCommentBtn?.addEventListener('click', () => commentInput?.focus());
+      commentForm?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitCommunityComment(post.id, commentInput?.value || '');
+      });
+      const deleteBtn = document.getElementById('detailDeleteBtn');
+      deleteBtn?.addEventListener('click', async () => {
+        if (!confirm('정말 삭제할까요?')) return;
+        try {
+          await deleteDoc(doc(db, 'communityPosts', post.id));
+        } catch(e) { console.warn('remote delete failed', e); }
+        state.communityPosts = state.communityPosts.filter(p => p.id !== post.id);
+        writeLocalCommunityPosts(state.communityPosts);
+        els.communityDetailView?.classList.remove('active');
+        state.detailViewPostId = null;
+        renderCommunityFeed();
+      });
+    };
+
+    const toggleCommunityLike = async (postId) => {
+      const user = syncCurrentUserState();
+      if (!user) { setModalOpen(els.authModal, true); return; }
+      const post = getCommunityPostById(postId);
+      if (!post) return;
+      const likedBy = Array.isArray(post.likedBy) ? [...post.likedBy] : [];
+      const liked = likedBy.includes(user.uid);
+      const next = {
+        ...post,
+        likedBy: liked ? likedBy.filter(uid => uid !== user.uid) : [...likedBy, user.uid],
+        likesCount: liked ? Math.max(0, Number(post.likesCount || 0) - 1) : Number(post.likesCount || 0) + 1,
+      };
+      await persistCommunityPost(next);
+    };
+
+    const submitCommunityComment = async (postId, rawText) => {
+      const user = syncCurrentUserState();
+      if (!user) { setModalOpen(els.authModal, true); return; }
+      const text = String(rawText || '').trim();
+      if (!text) return;
+      const post = getCommunityPostById(postId);
+      if (!post) return;
+      const comment = {
+        id: uid(),
+        authorUid: user.uid,
+        authorName: state.profile.displayName || user.displayName || user.email || '익명',
+        authorStatus: state.profile.statusMessage || '',
+        authorPhotoData: state.profile.photoData || '',
+        authorPhotoURL: user.photoURL || '',
+        text,
+        createdAt: Date.now(),
+      };
+      const next = {
+        ...post,
+        comments: [...(Array.isArray(post.comments) ? post.comments : []), comment],
+        commentsCount: Number(post.commentsCount || 0) + 1,
+      };
+      await persistCommunityPost(next);
+      const input = document.getElementById('detailCommentInput');
+      if (input) input.value = '';
+    };
+
+    const openCommunityPostForm = async (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      const user = syncCurrentUserState();
+      if (!user) {
+        alert('글쓰기는 로그인 후 이용할 수 있어요.');
+        showAuthModal();
+        return;
+      }
+      if (!(state.profile.statusMessage || '').trim()) {
+        alert('프로필에서 상태메시지를 먼저 설정해 주세요.');
+        showProfileModal();
+        return;
+      }
+      showView('community');
+      switchCommunityTab('compose');
+      if (els.communityAttachSelect) els.communityAttachSelect.value = appId;
+      if (els.communityPostTitle) els.communityPostTitle.value = '';
+      if (els.communityPostContent) els.communityPostContent.value = '';
+      setTimeout(() => els.communityPostTitle?.focus(), 50);
+    };
+
+    const publishCommunityPost = async () => {
+      const user = syncCurrentUserState();
+      if (!user) {
+        setModalOpen(els.authModal, true);
+        return;
+      }
+
+      const title = (els.communityPostTitle?.value || '').trim();
+      const content = (els.communityPostContent?.value || '').trim();
+      const appId = els.communityAttachSelect?.value || '';
+      const app = appId ? state.apps.find(a => a.id === appId) : null;
+
+      if (!title) {
+        setCommunityPostError('제목을 입력해주세요.');
+        return;
+      }
+
+      const statusMessage = (state.profile.statusMessage || '').trim();
+      if (!statusMessage) {
+        alert('상태메시지를 먼저 설정해 주세요.');
+        showProfileModal();
+        return;
+      }
+
+      const basePost = {
+        sourceAppId: app?.id || '',
+        title,
+        content,
+        appName: app?.name || '',
+        appDescription: app?.description || '',
+        appIcon: app?.iconImage || '',
+        appDate: app?.date || '',
+        ownerUid: user.uid,
+        ownerEmail: user.email || '',
+        ownerName: state.profile.displayName || user.displayName || user.email || '익명',
+        ownerStatus: statusMessage,
+        ownerPhotoData: state.profile.photoData || '',
+        ownerPhotoURL: user.photoURL || '',
+        likesCount: 0,
+        commentsCount: 0,
+        likedBy: [],
+        comments: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        localOnly: true,
+      };
+
+      try {
+        const payload = {
+          ...basePost,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          localOnly: false,
+        };
+        const docRef = await addDoc(collection(db, 'communityPosts'), payload);
+        upsertLocalCommunityPost({ ...basePost, id: docRef.id, localOnly: false });
+        els.communityPostTitle.value = '';
+        els.communityPostContent.value = '';
+        setCommunityPostError('');
+        renderCommunityComposer();
+        
+        switchCommunityTab('feed');
+        
+        await loadCommunityFeed();
+        alert('게시했습니다.');
+      } catch (err) {
+        console.error(err);
+        const fallback = { ...basePost, id: `local-${uid()}` };
+        upsertLocalCommunityPost(fallback);
+        state.communityPosts = mergeCommunityPosts(state.communityPosts, [fallback]);
+        writeLocalCommunityPosts(state.communityPosts);
+        els.communityPostTitle.value = '';
+        els.communityPostContent.value = '';
+        setCommunityPostError('');
+        renderCommunityComposer();
+        
+        switchCommunityTab('feed');
+        
+        renderCommunityFeed();
+        alert('Firebase에 저장하지 못해 로컬 게시판에 먼저 올렸습니다.');
+      }
+    };
+
+    const setModalOpen = (el, open) => {
+      if (open) el.classList.add('open'); else el.classList.remove('open');
+    };
+
+    const openAddModal = () => {
+      state.editingId = null;
+      state.formData = { name: '', description: '', date: '', iconImage: '', htmlContent: '' };
+      els.modalTitle.textContent = '새 앱 추가';
+      els.nameInput.value = '';
+      els.descInput.value = '';
+      els.dateInput.value = '';
+      els.iconInput.value = '';
+      els.htmlInput.value = '';
+      els.iconPreview.style.display = 'none';
+      els.htmlPreview.style.display = 'none';
+      setError('');
+      setModalOpen(els.modalBackdrop, true);
+      els.nameInput.focus();
+    };
+
+    const openEditModal = (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      state.editingId = appId;
+      state.formData = { name: app.name || '', description: app.description || '', date: app.date || '', iconImage: app.iconImage || '', htmlContent: app.htmlContent || '' };
+      els.modalTitle.textContent = '앱 수정';
+      els.nameInput.value = state.formData.name;
+      els.descInput.value = state.formData.description;
+      els.dateInput.value = state.formData.date;
+      els.iconInput.value = '';
+      els.htmlInput.value = '';
+      if (state.formData.iconImage) {
+        els.iconPreviewImg.innerHTML = `<img src="${state.formData.iconImage}" alt="" />`;
+        els.iconPreviewName.textContent = '아이콘 설정됨';
+        els.iconPreview.style.display = 'flex';
+      } else els.iconPreview.style.display = 'none';
+      if (state.formData.htmlContent) {
+        els.htmlPreviewName.textContent = 'HTML 파일 설정됨';
+        els.htmlPreview.style.display = 'flex';
+      } else els.htmlPreview.style.display = 'none';
+      setError('');
+      setModalOpen(els.modalBackdrop, true);
+      els.nameInput.focus();
+    };
+
+    const hideModal = () => setModalOpen(els.modalBackdrop, false);
+    const hideAuthModal = () => setModalOpen(els.authModal, false);
+    const hideProfileModal = () => setModalOpen(els.profileModal, false);
+    const showAuthModal = () => { updateAuthTab(); setModalOpen(els.authModal, true); };
+    const showProfileModal = () => { updateProfileUI(); setModalOpen(els.profileModal, true); };
+
+    const saveApp = async () => {
+      try {
+        const name = els.nameInput.value.trim();
+        const desc = els.descInput.value.trim();
+        const date = els.dateInput.value.trim();
+        if (!name) { setError('앱 이름을 입력해.'); return; }
+        if (!state.formData.htmlContent) { setError('HTML 파일을 업로드해.'); return; }
+        const now = Date.now();
+        if (state.editingId) {
+          const app = state.apps.find(a => a.id === state.editingId);
+          if (!app) { setError('앱을 찾을 수 없어요.'); return; }
+          app.name = name;
+          app.description = desc;
+          app.date = date;
+          if (state.formData.iconImage) app.iconImage = state.formData.iconImage;
+          if (state.formData.htmlContent) app.htmlContent = state.formData.htmlContent;
+          app.timestamp = now;
+        } else {
+          state.apps.unshift({ id: uid(), name, description: desc, date, iconImage: state.formData.iconImage || '', htmlContent: state.formData.htmlContent, favorite: false, lastOpened: 0, timestamp: now });
+        }
+        persistLocalState();
+        renderLibrary();
+        renderHomeShortcuts();
+        updateRuntimeCount();
+        hideModal();
+        queueCloudSave();
+      } catch (err) {
+        console.error(err);
+        setError('앱 저장 중 오류가 발생했어.');
+      }
+    };
+
+    const deleteApp = async (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      if (!confirm(`"${app.name}" 앱을 정말 삭제할까?`)) return;
+      state.apps = state.apps.filter(a => a.id !== appId);
+      delete state.runtimeStores[appId];
+      persistLocalState();
+      renderLibrary();
+      renderHomeShortcuts();
+      updateRuntimeCount();
+      if (state.currentUser) {
+        try { await deleteDoc(doc(db, 'users', state.currentUser.uid, 'apps', appId)); } catch (_) {}
+      }
+    };
+
+    const launchApp = async (appId) => {
+      const app = state.apps.find(a => a.id === appId);
+      if (!app) return;
+      if (!app.htmlContent || !app.htmlContent.trim()) { alert('이 앱의 HTML 파일이 없어요.'); return; }
+      app.lastOpened = Date.now();
+      persistLocalState();
+      renderHomeShortcuts();
+      queueCloudSave();
+      state.runtimeAppId = appId;
+      els.runtimeTitle.textContent = app.name || '앱';
+      els.runtimeFrame.srcdoc = buildRuntimeHtml(app);
+      showView('runtime');
+    };
+
+    const updateAuthTab = () => {
+      const isLogin = state.activeAuthTab === 'login';
+      els.loginTabBtn.classList.toggle('active', isLogin);
+      els.signupTabBtn.classList.toggle('active', !isLogin);
+      els.authSubmitBtn.textContent = isLogin ? '로그인' : '회원가입';
+    };
+
+    const updateProfileUI = () => {
+      const user = getSignedInUser();
+      if (user) {
+        els.profileChipName.textContent = state.profile.displayName || user.displayName || user.email?.split('@')[0] || '사용자';
+        els.profileEmailText.textContent = user.email || '-';
+        els.profileUidText.textContent = user.uid || '-';
+      } else {
+        els.profileChipName.textContent = '로그인';
+        els.profileEmailText.textContent = '-';
+        els.profileUidText.textContent = '-';
+      }
+
+      if (state.profile.photoData) {
+        els.profileChipAvatar.innerHTML = `<img src="${state.profile.photoData}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+        els.profilePhotoPreview.innerHTML = `<img src="${state.profile.photoData}" alt="" />`;
+      } else {
+        const initial = state.profile.displayName?.slice(0, 1).toUpperCase() || '👤';
+        els.profileChipAvatar.textContent = initial;
+        els.profilePhotoPreview.innerHTML = '<span style="font-size:28px;">👤</span>';
+      }
+
+      els.displayNameInput.value = state.profile.displayName || '';
+      els.statusMessageInput.value = state.profile.statusMessage || '';
+      updateSyncLabels();
+    };
+
+    const updateRuntimeCount = () => {
+      els.appTotal.textContent = state.apps.length;
+      els.runtimeCount.textContent = Object.keys(state.runtimeStores || {}).length;
+    };
+
+    const doAuthSubmit = async () => {
+      const email = els.authEmail.value.trim();
+      const password = els.authPassword.value.trim();
+      if (!email || !password) { alert('이메일과 비밀번호를 입력해.'); return; }
+      try {
+        if (state.activeAuthTab === 'login') {
+          await signInWithEmailAndPassword(auth, email, password);
+        } else {
+          await createUserWithEmailAndPassword(auth, email, password);
+        }
+        hideAuthModal();
+      } catch (e) {
+        const code = String(e?.code || '');
+        const help = code.includes('auth/operation-not-allowed')
+          ? 'Firebase 콘솔에서 Email/Password 로그인을 켜야 해.'
+          : code.includes('auth/invalid-credential') || code.includes('auth/wrong-password') || code.includes('auth/user-not-found')
+            ? '이메일이나 비밀번호를 다시 확인해봐.'
+            : code.includes('auth/unauthorized-domain')
+              ? 'Firebase 콘솔의 Authorized domains에 현재 주소를 추가해야 해.'
+              : 'Firebase 설정을 확인해봐.';
+        alert(`${e?.message || '인증 실패'}
+${help}`);
+      }
+    };
+
+    const doGoogleLogin = async () => {
+      try {
+        await signInWithPopup(auth, googleProvider);
+        hideAuthModal();
+      } catch (e) {
+        const code = String(e?.code || '');
+        const help = code.includes('auth/operation-not-allowed')
+          ? 'Firebase 콘솔에서 Google 로그인을 켜야 해.'
+          : code.includes('auth/unauthorized-domain')
+            ? 'Firebase 콘솔의 Authorized domains에 현재 주소를 추가해야 해.'
+            : code.includes('auth/popup-blocked') || code.includes('auth/popup-closed-by-user')
+              ? '팝업이 막혔어. 다시 시도해봐.'
+              : 'Firebase 설정을 확인해봐.';
+        alert(`${e?.message || 'Google 로그인 실패'}
+${help}`);
+      }
+    };
+
+    const saveProfile = async () => {
+      const user = syncCurrentUserState();
+      if (!user) { setModalOpen(els.authModal, true); return; }
+      const displayName = els.displayNameInput.value.trim();
+      const statusMessage = els.statusMessageInput.value.trim();
+      if (!statusMessage) { alert('상태메시지는 필수입니다.'); return; }
+      state.profile.displayName = displayName;
+      state.profile.statusMessage = statusMessage;
+      const photoData = state.profile.photoData || '';
+      try {
+        await updateProfile(user, { displayName, photoURL: photoData || null });
+      } catch (_) {}
+      try {
+        await setDoc(doc(db, 'users', user.uid), {
+          displayName,
+          statusMessage,
+          photoData,
+          email: user.email || '',
+          runtimeStores: state.runtimeStores || {},
+          launcherState: {
+            apps: state.apps,
+            runtimeStores: state.runtimeStores,
+            profile: state.profile,
+          },
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+      } catch (_) {}
+      persistLocalState();
+      updateProfileUI();
+      updateSyncLabels();
+      queueCloudSave();
+      hideProfileModal();
+    };
+
+    const updateSyncLabels = () => {
+      const currentUser = syncCurrentUserState();
+      const onlineText = currentUser ? (state.cloudSyncPending ? '동기화 중' : '클라우드 동기화됨') : '로컬 저장';
+      els.syncStateText.textContent = onlineText;
+      els.authStateLabel.textContent = currentUser ? '로그인됨' : '로그아웃';
+      updateRuntimeCount();
+    };
+
+    const exportData = () => {
+      const payload = {
+        version: CURRENT_VERSION,
+        apps: state.apps,
+        runtimeStores: state.runtimeStores,
+        profile: state.profile,
+        exportedAt: new Date().toISOString(),
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `launcher-vibe-${Date.now()}.json`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    };
+
+    const importData = async (file) => {
+      try {
+        const text = await readFileAsText(file);
+        const parsed = JSON.parse(text);
+        const apps = sanitizeApps(parsed.apps || parsed);
+        const runtimeStores = sanitizeRuntimeStores(parsed.runtimeStores || {});
+        if (!confirm('기존 앱을 이 파일 내용으로 바꿀까?')) return;
+        state.apps = apps;
+        state.runtimeStores = runtimeStores;
+        if (parsed.profile && typeof parsed.profile === 'object') state.profile = { ...state.profile, ...parsed.profile };
+        persistLocalState();
+        renderLibrary();
+        renderHomeShortcuts();
+        updateRuntimeCount();
+        updateProfileUI();
+        queueCloudSave();
+        alert('가져왔습니다.');
+      } catch (e) {
+        alert('파일을 읽을 수 없어요.');
+      }
+    };
+
+    const clearAllData = async () => {
+      if (!confirm('정말 모두 지울까요?')) return;
+      if (!confirm('정말정말요?')) return;
+      state.apps = [];
+      state.runtimeStores = {};
+      persistLocalState();
+      renderLibrary();
+      renderHomeShortcuts();
+      updateRuntimeCount();
+      if (state.currentUser) queueCloudSave();
+      alert('초기화했습니다.');
+    };
+
+    const applyInitialState = () => {
+      const local = loadLocalState();
+      if (local) {
+        state.apps = sanitizeApps(local.apps || []);
+        state.runtimeStores = sanitizeRuntimeStores(local.runtimeStores || {});
+        if (local.profile) state.profile = { ...state.profile, ...local.profile };
+      }
+      updateRuntimeCount();
+      renderLibrary();
+      renderCommunityFeed();
+      renderHomeShortcuts();
+      updateProfileUI();
+    };
+
+    const applyCloudAuthUser = async (user) => {
+      state.currentUser = user;
+      state.cloudReady = true;
+      state.profile.displayName = user.displayName || state.profile.displayName || '';
+      state.profile.photoData = user.photoURL || state.profile.photoData || '';
+      updateProfileUI();
+      updateSyncLabels();
+      await loadCloudAll();
+      renderLibrary();
+      renderHomeShortcuts();
+      renderCommunityFeed();
+      updateProfileUI();
+      updateSyncLabels();
+      persistLocalState();
+    };
+
+    const loadCloudAll = async () => {
+      try {
+        const user = getSignedInUser();
+        if (!user) return;
+        const userRef = doc(db, 'users', user.uid);
+        const [userDoc, appsSnap] = await Promise.all([
+          getDoc(userRef),
+          getDocs(collection(db, 'users', user.uid, 'apps')),
+        ]);
+
+        const remoteApps = [];
+        appsSnap.forEach(docSnap => {
+          const data = docSnap.data() || {};
+          remoteApps.push({
+            id: docSnap.id,
+            name: String(data.name || ''),
+            description: String(data.description || ''),
+            date: String(data.date || ''),
+            iconImage: String(data.iconImage || ''),
+            htmlContent: String(data.htmlContent || ''),
+            favorite: Boolean(data.favorite),
+            pinned: Boolean(data.pinned),
+            lastOpened: Number(data.lastOpened || 0),
+            timestamp: Number(data.timestamp?.toMillis ? data.timestamp.toMillis() : data.timestamp || 0),
+          });
+        });
+
+        if (userDoc.exists()) {
+          const data = userDoc.data() || {};
+          state.profile.displayName = data.displayName || data.profile?.displayName || state.profile.displayName || '';
+          state.profile.statusMessage = data.statusMessage || data.profile?.statusMessage || state.profile.statusMessage || '';
+          state.profile.photoData = data.photoData || data.profile?.photoData || state.profile.photoData || '';
+          state.runtimeStores = sanitizeRuntimeStores(data.runtimeStores || data.launcherState?.runtimeStores || state.runtimeStores || {});
+          const userApps = sanitizeApps(data.apps || data.launcherState?.apps || []);
+          state.apps = mergeAppsById(remoteApps, userApps, state.apps);
+        } else {
+          state.apps = mergeAppsById(remoteApps, state.apps);
+        }
+
+        persistLocalState();
+        updateRuntimeCount();
+        updateProfileUI();
+        renderLibrary();
+        renderHomeShortcuts();
+      } catch (err) {
+        console.error('loadCloudAll failed:', err);
+      }
+    };
+
+    let cloudSaveTimeout = null;
+    const queueCloudSave = () => {
+      if (!state.currentUser) return;
+      state.cloudSyncPending = true;
+      updateSyncLabels();
+      clearTimeout(cloudSaveTimeout);
+      cloudSaveTimeout = setTimeout(saveCloudAll, 1500);
+    };
+
+    const saveCloudAll = async () => {
+      const user = getSignedInUser();
+      if (!user) return;
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const appsCol = collection(db, 'users', user.uid, 'apps');
+        const existingSnap = await getDocs(appsCol);
+        const currentIds = new Set(state.apps.map(app => app.id));
+
+        await Promise.all(existingSnap.docs.filter(d => !currentIds.has(d.id)).map(d => deleteDoc(d.ref)));
+        await Promise.all(state.apps.map(app => setDoc(doc(db, 'users', user.uid, 'apps', app.id), {
+          ...app,
+          timestamp: serverTimestamp(),
+        }, { merge: true })));
+
+        await setDoc(userRef, {
+          displayName: state.profile.displayName || '',
+          statusMessage: state.profile.statusMessage || '',
+          photoData: state.profile.photoData || '',
+          runtimeStores: state.runtimeStores || {},
+          launcherState: {
+            apps: state.apps,
+            runtimeStores: state.runtimeStores,
+            profile: state.profile,
+          },
+          updatedAt: serverTimestamp(),
+        }, { merge: true });
+
+        state.cloudSyncPending = false;
+        updateSyncLabels();
+      } catch (err) {
+        console.error('saveCloudAll failed:', err);
+        state.cloudSyncPending = false;
+        updateSyncLabels();
+      }
+    };
+
+    const openFilePicker = (inputEl) => {
+      if (!inputEl) return;
+      if (typeof inputEl.showPicker === 'function') {
+        try {
+          inputEl.showPicker();
+          return;
+        } catch (_) {}
+      }
+      inputEl.click();
+    };
+
+    const attachEvents = () => {
+      try {
+        if (els.settingsBtn) els.settingsBtn.addEventListener('click', () => { updateRuntimeCount(); updateSyncLabels(); applyTheme(state.theme); setModalOpen(els.settingsModal, true); });
+
+        document.querySelectorAll('.theme-card').forEach(card => {
+          card.addEventListener('click', () => {
+            const theme = card.getAttribute('data-theme');
+            if (theme) applyTheme(theme);
+          });
+        });
+        if (els.profileChip) els.profileChip.addEventListener('click', showProfileModal);
+        if (els.closeSettings) els.closeSettings.addEventListener('click', () => setModalOpen(els.settingsModal, false));
+        if (els.settingsModal) els.settingsModal.addEventListener('click', (e) => { if (e.target === els.settingsModal) setModalOpen(els.settingsModal, false); });
+        if (els.openAuthFromSettings) els.openAuthFromSettings.addEventListener('click', showAuthModal);
+        if (els.openProfileFromSettings) els.openProfileFromSettings.addEventListener('click', showProfileModal);
+        if (els.openCommunityFromSettings) els.openCommunityFromSettings.addEventListener('click', openCommunityView);
+        if (els.exportData) els.exportData.addEventListener('click', exportData);
+        if (els.importData) els.importData.addEventListener('click', () => els.importFile?.click());
+        if (els.importFile) els.importFile.addEventListener('change', (e) => { const file = e.target.files?.[0]; if (file) importData(file); e.target.value = ''; });
+        if (els.clearData) els.clearData.addEventListener('click', clearAllData);
+
+        if (els.openCommunityHomeBtn) els.openCommunityHomeBtn.addEventListener('click', openCommunityView);
+        if (els.toLibraryBtn) els.toLibraryBtn.addEventListener('click', () => showView('library'));
+        if (els.libraryBackBtn) els.libraryBackBtn.addEventListener('click', () => showView('home'));
+        if (els.communityBackBtn) els.communityBackBtn.addEventListener('click', () => {
+        if (_communityUnsubscribe) { _communityUnsubscribe(); _communityUnsubscribe = null; }
+        showView('home');
+      });
+        if (els.communityRefreshBtn) els.communityRefreshBtn.addEventListener('click', () => {
+          if (_communityUnsubscribe) { _communityUnsubscribe(); _communityUnsubscribe = null; }
+          loadCommunityFeed();
+        });
+        if (els.runtimeCloseBtn) els.runtimeCloseBtn.addEventListener('click', () => showView('library'));
+        if (els.libraryAddBtn) els.libraryAddBtn.addEventListener('click', openAddModal);
+        if (els.librarySearchInput) els.librarySearchInput.addEventListener('input', (e) => { state.searchQuery = e.target.value || ''; renderLibrary(); });
+
+        if (els.recentAppsList) els.recentAppsList.addEventListener('click', (e) => {
+          const button = e.target.closest('[data-quick-launch]');
+          if (!button) return;
+          launchApp(button.getAttribute('data-quick-launch'));
+        });
+        if (els.favoriteAppsList) els.favoriteAppsList.addEventListener('click', (e) => {
+          const button = e.target.closest('[data-quick-launch]');
+          if (!button) return;
+          launchApp(button.getAttribute('data-quick-launch'));
+        });
+
+        if (els.closeModalBtn) els.closeModalBtn.addEventListener('click', hideModal);
+        if (els.cancelBtn) els.cancelBtn.addEventListener('click', hideModal);
+        if (els.saveBtn) els.saveBtn.addEventListener('click', saveApp);
+        if (els.modalBackdrop) els.modalBackdrop.addEventListener('click', (e) => { if (e.target === els.modalBackdrop) hideModal(); });
+
+        if (els.nameInput) els.nameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); els.descInput?.focus(); }
+        });
+
+      if (els.chooseIconBtn) els.chooseIconBtn.addEventListener('click', () => openFilePicker(els.iconInput));
+      if (els.chooseHtmlBtn) els.chooseHtmlBtn.addEventListener('click', () => openFilePicker(els.htmlInput));
+      if (els.chooseIconBtn) els.chooseIconBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFilePicker(els.iconInput); } });
+      if (els.chooseHtmlBtn) els.chooseHtmlBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFilePicker(els.htmlInput); } });
+      ensureBgmUnlock();
+        if (els.iconInput) els.iconInput.addEventListener('change', async () => {
+          const file = els.iconInput.files?.[0];
+          if (!file) return;
+          if (!file.type.startsWith('image/')) { setError('이미지 파일만 업로드할 수 있어.'); els.iconInput.value = ''; return; }
+          if (file.size > 2 * 1024 * 1024) { setError('이미지는 2MB 이하여야 해.'); els.iconInput.value = ''; return; }
+          try {
+            const data = await readFileAsDataURL(file);
+            state.formData.iconImage = data;
+            if (els.iconPreviewImg) els.iconPreviewImg.innerHTML = `<img src="${data}" alt="" />`;
+            if (els.iconPreviewName) els.iconPreviewName.textContent = file.name;
+            if (els.iconPreview) els.iconPreview.style.display = 'flex';
+            setError('');
+          } catch {
+            setError('이미지를 읽는 중 오류가 발생했어.');
+            if (els.iconInput) els.iconInput.value = ''; 
+          }
+        });
+        if (els.iconRemoveBtn) els.iconRemoveBtn.addEventListener('click', (e) => { e.preventDefault(); state.formData.iconImage = ''; if (els.iconInput) els.iconInput.value = ''; if (els.iconPreview) els.iconPreview.style.display = 'none'; });
+
+        if (els.htmlInput) els.htmlInput.addEventListener('change', async () => {
+          const file = els.htmlInput.files?.[0];
+          if (!file) return;
+          if (!file.name.endsWith('.html') && !file.name.endsWith('.htm')) { setError('HTML 파일만 업로드할 수 있어.'); els.htmlInput.value = ''; return; }
+          if (file.size > 5 * 1024 * 1024) { setError('HTML 파일은 5MB 이하여야 해.'); els.htmlInput.value = ''; return; }
+          try {
+            const data = normalizeHtmlText(await readFileAsText(file));
+            state.formData.htmlContent = data;
+            if (els.htmlPreviewName) els.htmlPreviewName.textContent = file.name;
+            if (els.htmlPreview) els.htmlPreview.style.display = 'flex';
+            setError('');
+          } catch {
+            setError('HTML 파일을 읽는 중 오류가 발생했어.');
+            if (els.htmlInput) els.htmlInput.value = ''; 
+          }
+        });
+        if (els.htmlRemoveBtn) els.htmlRemoveBtn.addEventListener('click', (e) => { e.preventDefault(); state.formData.htmlContent = ''; if (els.htmlInput) els.htmlInput.value = ''; if (els.htmlPreview) els.htmlPreview.style.display = 'none'; });
+
+        if (els.loginTabBtn) els.loginTabBtn.addEventListener('click', () => { state.activeAuthTab = 'login'; updateAuthTab(); });
+        if (els.signupTabBtn) els.signupTabBtn.addEventListener('click', () => { state.activeAuthTab = 'signup'; updateAuthTab(); });
+        if (els.authSubmitBtn) els.authSubmitBtn.addEventListener('click', doAuthSubmit);
+        if (els.googleLoginBtn) els.googleLoginBtn.addEventListener('click', doGoogleLogin);
+        if (els.closeAuth) els.closeAuth.addEventListener('click', hideAuthModal);
+        if (els.authModal) els.authModal.addEventListener('click', (e) => { if (e.target === els.authModal) hideAuthModal(); });
+        if (els.openAuthFromSettings) els.openAuthFromSettings.addEventListener('click', showAuthModal);
+
+        if (els.closeProfile) els.closeProfile.addEventListener('click', hideProfileModal);
+        if (els.profileModal) els.profileModal.addEventListener('click', (e) => { if (e.target === els.profileModal) hideProfileModal(); });
+        if (els.saveProfileBtn) els.saveProfileBtn.addEventListener('click', saveProfile);
+        if (els.logoutBtn) els.logoutBtn.addEventListener('click', async () => { await signOut(auth); hideProfileModal(); });
+        if (els.choosePhotoBtn) els.choosePhotoBtn.addEventListener('click', () => els.photoInput?.click());
+        if (els.removePhotoBtn) els.removePhotoBtn.addEventListener('click', () => {
+          state.profile.photoData = '';
+          if (els.photoInput) els.photoInput.value = '';
+          updateProfileUI();
+        });
+        if (els.photoInput) els.photoInput.addEventListener('change', async () => {
+          const file = els.photoInput.files?.[0];
+          if (!file) return;
+          if (!file.type.startsWith('image/')) { alert('이미지 파일만 업로드할 수 있습니다.'); els.photoInput.value = ''; return; }
+          if (file.size > 3 * 1024 * 1024) { alert('프로필 사진은 3MB 이하만 가능합니다.'); els.photoInput.value = ''; return; }
+          try {
+            const data = await resizeImageToDataURL(file, 256, 0.88);
+            state.profile.photoData = data;
+            updateProfileUI();
+            persistLocalState();
+          } catch (err) {
+            console.error(err);
+            alert('프로필 사진을 읽을 수 없습니다.');
+          }
+        });
+
+      if (els.communitySearchInput) els.communitySearchInput.addEventListener('input', (e) => { state.communitySearchQuery = e.target.value || ''; renderCommunityFeed(); });
+      if (els.communityBackToFeedBtn) els.communityBackToFeedBtn.addEventListener('click', () => {
+        if (els.communityPostTitle) els.communityPostTitle.value = '';
+        if (els.communityPostContent) els.communityPostContent.value = '';
+        if (els.communityAttachSelect) els.communityAttachSelect.value = '';
+        setCommunityPostError('');
+        switchCommunityTab('feed');
+      });
+      if (els.communityFeedTabBtn) els.communityFeedTabBtn.addEventListener('click', () => switchCommunityTab('feed'));
+      if (els.communityComposeTabBtn) els.communityComposeTabBtn.addEventListener('click', () => openCommunityCompose());
+      if (els.communitySubmitBtn) els.communitySubmitBtn.addEventListener('click', publishCommunityPost);
+      if (els.detailBackBtn) els.detailBackBtn.addEventListener('click', () => {
+        if (els.communityDetailView) els.communityDetailView.classList.remove('active');
+        state.detailViewPostId = null;
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (els.modalBackdrop.classList.contains('open')) hideModal();
+          else if (els.authModal.classList.contains('open')) hideAuthModal();
+          else if (els.profileModal.classList.contains('open')) hideProfileModal();
+          else if (els.communityDetailView.classList.contains('active')) {
+            els.communityDetailView.classList.remove('active');
+            state.detailViewPostId = null;
+          }
+          else if (state.currentView === 'runtime') showView('library');
+          else if (state.currentView === 'library' || state.currentView === 'community') showView('home');
+        }
+      });
+
+      window.addEventListener('message', (e) => {
+        const msg = e.data;
+        if (!msg || msg.__launcher !== true) return;
+        if (msg.type === 'runtime-storage') {
+          updateRuntimeStore(msg.appId, msg.kind, msg.data || {});
+        }
+      });
+
+      window.addEventListener('beforeunload', () => {
+        persistLocalState();
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') persistLocalState();
+      });
+      } catch(err) { 
+        console.error('Event attachment error:', err); 
+      }
+    };
+
+    const initAuth = () => {
+      onAuthStateChanged(auth, async (user) => {
+        state.currentUser = user || null;
+        if (user) syncCurrentUserState();
+        if (user) {
+          await applyCloudAuthUser(user);
+        } else {
+          state.cloudReady = false;
+          updateProfileUI();
+          updateSyncLabels();
+        }
+      });
+    };
+
+    const hardResetUi = () => {
+      try {
+        document.querySelectorAll('.modal-backdrop.open').forEach((el) => el.classList.remove('open'));
+        document.documentElement.style.pointerEvents = 'auto';
+        document.body.style.pointerEvents = 'auto';
+        document.documentElement.style.touchAction = 'auto';
+        document.body.style.touchAction = 'manipulation';
+      } catch (_) {}
+    };
+
+    const init = () => {
+      try {
+        hardResetUi();
+        applyTheme(state.theme);
+        applyInitialState();
+        updateAuthTab();
+        attachEvents();
+        initAuth();
+        renderLibrary();
+        renderCommunityFeed();
+        renderHomeShortcuts();
+        updateProfileUI();
+        updateSyncLabels();
+        loadCommunityFeed().catch((err) => console.warn('Community feed init failed:', err));
+        ensureBgmUnlock();
+      } catch (err) {
+        console.error('Initialization error:', err);
+        try {
+          applyInitialState();
+        } catch (e) {
+          console.error('Fallback init error:', e);
+        }
+      }
+    };
+
+    init();
+    window.addEventListener('pageshow', hardResetUi);
+
+    /* ===== PS DUST PARTICLES ===== */
+    (() => {
+      const canvas = document.getElementById('psDustCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W = 0, H = 0, raf = null;
+      const PARTICLE_COUNT = 38;
+      const particles = [];
+
+      const rand = (a, b) => a + Math.random() * (b - a);
+
+      const init = () => {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      };
+
+      const spawnParticle = () => ({
+        x: rand(0, W),
+        y: rand(0, H),
+        r: rand(1, 3.5),
+        vx: rand(-0.18, 0.18),
+        vy: rand(-0.28, -0.06),
+        alpha: rand(0.08, 0.38),
+        color: Math.random() < 0.5
+          ? `rgba(${rand(60,120)|0},${rand(160,220)|0},255,`
+          : `rgba(255,255,255,`,
+        life: rand(0, 1),
+        maxLife: rand(0.8, 1),
+      });
+
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const p = spawnParticle();
+        p.life = Math.random();
+        particles.push(p);
+      }
+
+      const tick = () => {
+        if (!document.body.classList.contains('theme-ps')) {
+          ctx.clearRect(0, 0, W, H);
+          raf = requestAnimationFrame(tick);
+          return;
+        }
+        ctx.clearRect(0, 0, W, H);
+        const dt = 0.004;
+        for (const p of particles) {
+          p.life += dt;
+          if (p.life >= p.maxLife) {
+            Object.assign(p, spawnParticle());
+            p.x = rand(0, W); p.y = H + 10; p.life = 0;
+            continue;
+          }
+          const t = p.life / p.maxLife;
+          const fade = t < 0.2 ? t / 0.2 : t > 0.8 ? (1 - t) / 0.2 : 1;
+          p.x += p.vx;
+          p.y += p.vy;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color + (p.alpha * fade) + ')';
+          ctx.fill();
+        }
+        raf = requestAnimationFrame(tick);
+      };
+
+      window.addEventListener('resize', init);
+      init();
+      tick();
+    })();
+
+  </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v833ccba57c9e4d2798f2e76cebdd09a11778172276447" integrity="sha512-57MDmcccJXYtNnH+ZiBwzC4jb2rvgVCEokYN+L/nLlmO8rfYT/gIpW2A569iJ/3b+0UEasghjuZH/ma3wIs/EQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
